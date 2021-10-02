@@ -8,11 +8,13 @@ import {
   Image,
   FlatList,
 } from 'react-native';
-import {COLORS, icons, SIZES, FONTS, images} from '../constants';
+import {COLORS, icons, SIZES, FONTS} from '../constants';
 
 //redux
 import {useSelector, useDispatch} from 'react-redux';
-import {getCategory, getRestaurant} from '../redux/actions/actions';
+// import {getCategory, getRestaurant} from '../redux/actions/actions';
+import {getCategory} from '../redux/actions/categoryActions';
+import {getRestaurant} from '../redux/actions/restaurantActions';
 
 const initialCurrentLocation = {
   streetName: 'Khoa Nguyễn',
@@ -24,7 +26,9 @@ const initialCurrentLocation = {
 
 export default function Home({navigation}) {
   //redux
-  const {category, restaurant} = useSelector(state => state.categoryReducer);
+  // const {category} = useSelector(state => state.categoryReducer);
+  const {category} = useSelector(state => state.category);
+  const {restaurant} = useSelector(state => state.restaurant);
   const dispatch = useDispatch();
 
   //
@@ -32,10 +36,10 @@ export default function Home({navigation}) {
   const [currentLocation, setCurrentLocation] = useState(
     initialCurrentLocation,
   );
-  // useEffect(() => {
-  //   dispatch(getCategory());
-  //   dispatch(getRestaurant());
-  // }, [dispatch]);
+  useEffect(() => {
+    dispatch(getCategory());
+    dispatch(getRestaurant());
+  }, [dispatch]);
 
   function onSelectCategory(item) {
     setSelectedCategory(item);

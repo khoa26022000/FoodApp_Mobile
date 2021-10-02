@@ -7,12 +7,14 @@ import {
   Image,
   ImageBackground,
   FlatList,
+  SectionList,
   ScrollView,
 } from 'react-native';
 import {icons, COLORS, SIZES, FONTS} from '../constants';
 
 import {useSelector, useDispatch} from 'react-redux';
-import {getFoodById, getMenuByIdRestaurant} from '../redux/actions/actions';
+import {getFood} from '../redux/actions/foodActions';
+import {getMenuByIdRestaurant} from '../redux/actions/menuActions';
 
 export default function Restaurant({route, navigation}) {
   const [restaurant, setRestaurant] = useState(null);
@@ -20,12 +22,15 @@ export default function Restaurant({route, navigation}) {
   // const [isShow, setIsShow] = useState(true);
 
   //redux
-  const {food, menu} = useSelector(state => state.categoryReducer);
+  // const {food, menu, user} = useSelector(state => state.categoryReducer);
+  const {food} = useSelector(state => state.food);
+  const {menu} = useSelector(state => state.menu);
+  const {user} = useSelector(state => state.user);
   const dispatch = useDispatch();
   const data = route.params.item;
 
   useEffect(() => {
-    // dispatch(getFoodById());
+    dispatch(getFood());
     dispatch(getMenuByIdRestaurant(data._id));
   }, [dispatch, data._id]);
   useEffect(() => {
@@ -74,11 +79,11 @@ export default function Restaurant({route, navigation}) {
   }
 
   function getSumItem() {
-    let item = oderItems.reduce((a, b) => a + (b.qty || 0), 0);
+    let item = oderItems.reduce((a, b) => a + b.qty, 0);
     return item;
   }
   function getTotal() {
-    let item = oderItems.reduce((a, b) => a + (b.total || 0), 0);
+    let item = oderItems.reduce((a, b) => a + b.total, 0);
     return item.toFixed(0).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
   }
 
@@ -100,7 +105,7 @@ export default function Restaurant({route, navigation}) {
           }}>
           <TouchableOpacity
             style={styles.renderHeader}
-            onPress={() => navigation.navigate('Home')}>
+            onPress={() => navigation.goBack()}>
             <Image
               source={icons.back}
               resizeMode="contain"
@@ -120,7 +125,7 @@ export default function Restaurant({route, navigation}) {
   }
   function RenderFoodInfo() {
     const renderItemFood = ({item}) => (
-      <TouchableOpacity
+      <View
         style={{
           width: '100%',
           marginBottom: SIZES.padding,
@@ -165,39 +170,63 @@ export default function Restaurant({route, navigation}) {
               }}>
               {item.price.toFixed(0).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}đ
             </Text>
-            <View style={{flexDirection: 'row', marginRight: 10}}>
-              <TouchableOpacity
-                style={{
-                  borderColor: COLORS.darkgray,
-                  borderWidth: 1,
-                  width: 20,
-                  height: 20,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-                onPress={() => editOder('-', item._id, item.price)}>
-                <Image
-                  resizeMode="cover"
+            {getOrderQty(item._id) > 0 ? (
+              <View style={{flexDirection: 'row', marginRight: 10}}>
+                <TouchableOpacity
                   style={{
-                    height: 10,
-                    width: 10,
+                    borderColor: COLORS.darkgray,
+                    borderWidth: 1,
+                    width: 20,
+                    height: 20,
+                    alignItems: 'center',
+                    justifyContent: 'center',
                   }}
-                  source={{
-                    uri: 'https://as2.ftcdn.net/v2/jpg/03/30/24/99/500_F_330249927_k8oy0p4zZqSAdxd1jxlhB0ZPT3fGLpjw.jpg',
+                  onPress={() => editOder('-', item._id, item.price)}>
+                  <Image
+                    resizeMode="cover"
+                    style={{
+                      height: 10,
+                      width: 10,
+                    }}
+                    source={{
+                      uri: 'https://as2.ftcdn.net/v2/jpg/03/30/24/99/500_F_330249927_k8oy0p4zZqSAdxd1jxlhB0ZPT3fGLpjw.jpg',
+                    }}
+                  />
+                </TouchableOpacity>
+                <Text
+                  style={{
+                    borderColor: COLORS.darkgray,
+                    borderTopWidth: 1,
+                    borderBottomWidth: 1,
+                    width: 20,
+                    height: 20,
+                    textAlign: 'center',
+                  }}>
+                  {getOrderQty(item._id)}
+                </Text>
+                <TouchableOpacity
+                  style={{
+                    borderColor: COLORS.darkgray,
+                    borderWidth: 1,
+                    width: 20,
+                    height: 20,
+                    alignItems: 'center',
+                    justifyContent: 'center',
                   }}
-                />
-              </TouchableOpacity>
-              <Text
-                style={{
-                  borderColor: COLORS.darkgray,
-                  borderTopWidth: 1,
-                  borderBottomWidth: 1,
-                  width: 20,
-                  height: 20,
-                  textAlign: 'center',
-                }}>
-                {getOrderQty(item._id)}
-              </Text>
+                  onPress={() => editOder('+', item._id, item.price)}>
+                  <Image
+                    resizeMode="cover"
+                    style={{
+                      height: 10,
+                      width: 10,
+                    }}
+                    source={{
+                      uri: 'https://cdn-icons-png.flaticon.com/512/1828/1828925.png',
+                    }}
+                  />
+                </TouchableOpacity>
+              </View>
+            ) : (
               <TouchableOpacity
                 style={{
                   borderColor: COLORS.darkgray,
@@ -206,6 +235,7 @@ export default function Restaurant({route, navigation}) {
                   height: 20,
                   alignItems: 'center',
                   justifyContent: 'center',
+                  marginRight: SIZES.padding * 2,
                 }}
                 onPress={() => editOder('+', item._id, item.price)}>
                 <Image
@@ -219,10 +249,10 @@ export default function Restaurant({route, navigation}) {
                   }}
                 />
               </TouchableOpacity>
-            </View>
+            )}
           </View>
         </View>
-      </TouchableOpacity>
+      </View>
     );
     const renderItemMenu = ({item}) => (
       <View
@@ -352,11 +382,11 @@ export default function Restaurant({route, navigation}) {
                     getSumItem() > 0 ? COLORS.primary : COLORS.darkgray,
                   alignItems: 'center',
                 }}
-                onPress={props =>
-                  getSumItem() > 0
+                onPress={() => {
+                  user.isAuthenticated === true
                     ? navigation.navigate('OderDelivery', {data})
-                    : (props.disabled = true)
-                }>
+                    : navigation.navigate('Login');
+                }}>
                 <Text style={{color: COLORS.white, ...FONTS.h2}}>
                   Giao hàng
                 </Text>
@@ -370,7 +400,7 @@ export default function Restaurant({route, navigation}) {
 
   return (
     <View style={styles.container}>
-      <ScrollView>
+      <ScrollView style={{flexGrow: 1}} nestedScrollEnabled={true}>
         {RenderHeader()}
         {RenderFoodInfo()}
       </ScrollView>

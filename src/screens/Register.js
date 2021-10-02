@@ -10,12 +10,28 @@ import {
 } from 'react-native';
 import {icons, COLORS, SIZES, FONTS} from '../constants';
 import {useDispatch, useSelector} from 'react-redux';
-import {loginUser} from '../redux/actions/userActions';
+import {registerUser} from '../redux/actions/userActions';
+import {Picker} from '@react-native-picker/picker';
+import axios from 'axios';
 
-export default function Login({navigation}) {
+export default function Register({navigation}) {
+  const [listCity, setListCity] = useState([]);
   const {loginSuccess} = useSelector(state => state.user);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
+  const [conformPassword, setConformPassword] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [city, setCity] = useState('Thành phố Hồ Chí Minh');
+  const [district, setDistrict] = useState('Quận 8');
+  const [ward, setWard] = useState('Phường 5');
+  const [street, setStreet] = useState('25 Trần phú');
+  const [address, setAddress] = useState({city, district, ward, street});
+
+  function ValidatePhoneNumber(phoneNumber) {
+    const phone = /^[0-9\-\+]{9,15}$/;
+    return phone.test(phoneNumber);
+  }
+
   const dispatch = useDispatch();
 
   // useEffect(() => {
@@ -23,12 +39,28 @@ export default function Login({navigation}) {
   // }, [dispatch]);
   function HandleSubmit() {
     try {
-      dispatch(loginUser(phoneNumber, password));
-      if (loginSuccess.loginSuccess.success === true) {
-        Alert.alert('Thông báo', loginSuccess.loginSuccess.message);
+      console.log('phoneUi', phoneNumber);
+      console.log('passUI', password);
+      console.log('conformUI', conformPassword);
+      console.log('nameUi', fullName);
+      if (conformPassword === password) {
+        dispatch(
+          registerUser(
+            phoneNumber,
+            password,
+            conformPassword,
+            fullName,
+            address,
+          ),
+        );
       } else {
-        Alert.alert('Thông báo', loginSuccess.loginSuccess.message);
+        Alert.alert('Thông báo', 'Password không giống nhau');
       }
+      //   if (loginSuccess.loginSuccess.success === true) {
+      //     Alert.alert('Thông báo', loginSuccess.loginSuccess.message);
+      //   } else {
+      //     Alert.alert('Thông báo', loginSuccess.loginSuccess.message);
+      //   }
     } catch (error) {
       console.log(error);
     }
@@ -44,7 +76,7 @@ export default function Login({navigation}) {
             style={stylesHeader.icons}
           />
         </TouchableOpacity>
-        <Text style={stylesHeader.text}>Đăng nhập</Text>
+        <Text style={stylesHeader.text}>Đăng ký tài khoản</Text>
       </View>
     );
   }
@@ -70,10 +102,26 @@ export default function Login({navigation}) {
                 style={stylesForm.imageStyle}
               />
               <TextInput
+                placeholder="Họ và tên"
+                dataDetectorTypes="fullName"
+                onChangeText={setFullName}
+                value={fullName}
+              />
+            </View>
+            <View style={stylesForm.textInput}>
+              <Image
+                source={{
+                  uri: 'https://cdn-icons-png.flaticon.com/512/126/126509.png',
+                }}
+                style={stylesForm.imageStyle}
+              />
+              <TextInput
                 placeholder="Số điện thoại"
+                keyboardType="numeric"
                 dataDetectorTypes="phoneNumber"
                 onChangeText={setPhoneNumber}
                 value={phoneNumber}
+                maxLength={10}
               />
             </View>
             <View style={stylesForm.textInput}>
@@ -90,13 +138,24 @@ export default function Login({navigation}) {
                 secureTextEntry={true}
               />
             </View>
+            <View style={stylesForm.textInput}>
+              <Image
+                source={{
+                  uri: 'https://cdn-icons-png.flaticon.com/512/3064/3064197.png',
+                }}
+                style={stylesForm.imageStyle}
+              />
+              <TextInput
+                placeholder="Nhập lại mật khẩu"
+                onChangeText={setConformPassword}
+                value={conformPassword}
+                secureTextEntry={true}
+              />
+            </View>
             <TouchableOpacity
               style={stylesForm.bottom}
               onPress={() => HandleSubmit()}>
-              <Text style={stylesForm.bottomText}>Đăng nhập</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-              <Text style={stylesForm.res}>Đăng ký tài khoản ?</Text>
+              <Text style={stylesForm.bottomText}>Đăng ký</Text>
             </TouchableOpacity>
           </View>
         </View>

@@ -7,24 +7,23 @@ import {
   TextInput,
   SafeAreaView,
   StyleSheet,
+  Image,
 } from 'react-native';
 import Login from './Login';
-import OderDetail from './OderDetail';
-import {COLORS} from '../constants';
+import OderDetail from './components/OderDetail';
+import {icons, COLORS, SIZES, FONTS} from '../constants';
 import {useSelector, useDispatch} from 'react-redux';
 
-export default function OderDelivery({route}) {
+export default function OderDelivery({route, navigation}) {
   const data = route.params;
-  console.log(data);
-  const {user} = useSelector(state => state.categoryReducer);
-
   return (
     <SafeAreaView style={styles.container}>
-      {user.isAuthenticated === true ? (
-        <OderDetail restaurant={data} />
+      <OderDetail restaurant={data} navigation={navigation} />
+      {/* {user.isAuthenticated === true ? (
+        <OderDetail restaurant={data} navigation={navigation} />
       ) : (
         <Login />
-      )}
+      )} */}
     </SafeAreaView>
   );
 }

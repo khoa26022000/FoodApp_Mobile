@@ -4,17 +4,16 @@ import {
   View,
   Text,
   TouchableOpacity,
-  TextInput,
   ScrollView,
   Image,
   StyleSheet,
 } from 'react-native';
-import {icons, COLORS, SIZES, FONTS} from '../constants';
-import {useSelector, useDispatch} from 'react-redux';
+import {icons, COLORS, SIZES, FONTS} from '../../constants';
+import {useSelector} from 'react-redux';
 
-export default function OderDetail({restaurant}) {
+export default function OderDetail({restaurant, navigation}) {
   const data = restaurant.data;
-  const {user} = useSelector(state => state.categoryReducer);
+  const {user} = useSelector(state => state.user);
   function getDate() {
     var date = new Date().getDate();
     var month = new Date().getMonth() + 1;
@@ -26,18 +25,22 @@ export default function OderDetail({restaurant}) {
 
     return gio + ':' + phut;
   }
+
   function RenderHeader() {
     return (
       <View style={stylesHeader.header}>
-        <Image
-          source={icons.back}
-          resizeMode="contain"
-          style={stylesHeader.icons}
-        />
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Image
+            source={icons.back}
+            resizeMode="contain"
+            style={stylesHeader.icons}
+          />
+        </TouchableOpacity>
         <Text style={stylesHeader.text}>Xác nhận đơn hàng</Text>
       </View>
     );
   }
+
   function RenderInfoUser() {
     return (
       <View style={styleInfoUser.container}>
@@ -52,12 +55,12 @@ export default function OderDetail({restaurant}) {
           />
         </View>
         <View style={styleInfoUser.item}>
-          <Text>{user.user.profile.fullName}</Text>
+          <Text>{user.user?.profile.fullName}</Text>
           <Text style={{marginHorizontal: 5}}>-</Text>
-          <Text>{user.user.phoneNumber}</Text>
+          <Text>{user.user?.phoneNumber}</Text>
         </View>
         <View style={styleInfoUser.item}>
-          <Text>{user.user.profile.address}</Text>
+          <Text>{user.user?.profile.address}</Text>
         </View>
       </View>
     );
@@ -85,8 +88,8 @@ export default function OderDetail({restaurant}) {
   }
   return (
     <View style={styles.container}>
-      {RenderHeader()}
       <ScrollView>
+        {RenderHeader()}
         {RenderInfoUser()}
         {RenderInfoFood()}
       </ScrollView>
@@ -97,26 +100,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.lightGray2,
-  },
-});
-
-const stylesHeader = StyleSheet.create({
-  header: {
-    backgroundColor: COLORS.white,
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    padding: SIZES.padding,
-    height: 50,
-  },
-  icons: {
-    width: 30,
-    height: 30,
-    tintColor: COLORS.primary,
-  },
-  text: {
-    ...FONTS.body2,
-    fontWeight: 'bold',
-    paddingLeft: 10,
   },
 });
 
@@ -165,5 +148,25 @@ const styleInfoFood = StyleSheet.create({
   text: {
     fontWeight: 'bold',
     ...FONTS.body3,
+  },
+});
+
+const stylesHeader = StyleSheet.create({
+  header: {
+    backgroundColor: COLORS.white,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    padding: SIZES.padding,
+    height: 50,
+  },
+  icons: {
+    width: 30,
+    height: 30,
+    tintColor: COLORS.primary,
+  },
+  text: {
+    ...FONTS.body2,
+    fontWeight: 'bold',
+    paddingLeft: 10,
   },
 });
