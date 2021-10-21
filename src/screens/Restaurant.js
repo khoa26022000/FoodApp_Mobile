@@ -9,16 +9,24 @@ import {
   FlatList,
   SectionList,
   ScrollView,
+  Pressable,
+  Modal,
+  Alert,
 } from 'react-native';
 import {icons, COLORS, SIZES, FONTS} from '../constants';
 
 import {useSelector, useDispatch} from 'react-redux';
 import {getFood} from '../redux/actions/foodActions';
 import {getMenuByIdRestaurant} from '../redux/actions/menuActions';
+import {getCombo} from '../redux/actions/comboAction';
+import {getChooseBbyRestaurant} from '../redux/actions/chooseActions';
+import {getListChoose} from '../redux/actions/listChooseActions';
 
 export default function Restaurant({route, navigation}) {
   const [restaurant, setRestaurant] = useState(null);
   const [oderItems, setOderItems] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [id, setId] = useState();
   // const [isShow, setIsShow] = useState(true);
 
   //redux
@@ -26,18 +34,27 @@ export default function Restaurant({route, navigation}) {
   const {food} = useSelector(state => state.food);
   const {menu} = useSelector(state => state.menu);
   const {user} = useSelector(state => state.user);
+  const {combo} = useSelector(state => state.combo);
+  const {listChoose} = useSelector(state => state.listChoose);
   const dispatch = useDispatch();
   const data = route.params.item;
 
   useEffect(() => {
     dispatch(getFood());
+    dispatch(getCombo());
     dispatch(getMenuByIdRestaurant(data._id));
+    dispatch(getChooseBbyRestaurant(data._id));
+    dispatch(getListChoose());
   }, [dispatch, data._id]);
   useEffect(() => {
     let {item} = route.params;
     setRestaurant(item);
   }, [route.params]);
 
+  function showPopup(foodId) {
+    setModalVisible(true);
+    setId(foodId);
+  }
   function editOder(action, foodId, price) {
     let orderList = oderItems.slice();
     let item = oderItems.filter(a => a.foodId == foodId);
@@ -87,22 +104,169 @@ export default function Restaurant({route, navigation}) {
     return item.toFixed(0).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
   }
 
+  function RenderPopUp({foodInfo}) {
+    const [foodItem, setFoodItem] = useState();
+    useEffect(() => {
+      const data1 = food.filter(a => a._id === foodInfo);
+      setFoodItem(data1);
+    }, [foodInfo]);
+    console.log(foodItem);
+    function renderItemListChoose({item}) {
+      return (
+        <View>
+          <Text>{item.name}</Text>
+          <Text>{item.price}</Text>
+        </View>
+      );
+    }
+    function renderItem({item}) {
+      return (
+        <View>
+          <View style={body.itemWrap}>
+            <View style={body.imageWrap}>
+              <Image
+                source={{uri: item.photo}}
+                resizeMode="cover"
+                style={body.image}
+              />
+            </View>
+            <View style={body.content}>
+              <Text style={body.foodName}>{item.name}</Text>
+
+              <Text style={body.description}>{item.description}</Text>
+              <View style={body.priceWrap}>
+                {item.price === item.lastPrice ? (
+                  <View>
+                    <Text style={body.price}>
+                      {item.price
+                        .toFixed(0)
+                        .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}
+                      đ
+                    </Text>
+                  </View>
+                ) : (
+                  <View style={{flexDirection: 'row'}}>
+                    <Text style={body.price1}>
+                      {item.price
+                        .toFixed(0)
+                        .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}
+                      đ
+                    </Text>
+                    <Text style={body.price}>
+                      {item.lastPrice
+                        .toFixed(0)
+                        .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}
+                      đ
+                    </Text>
+                  </View>
+                )}
+                {getOrderQty(item._id) > 0 ? (
+                  <View style={body.slWrap}>
+                    <TouchableOpacity
+                      style={body.tru}
+                      onPress={() => editOder('-', item._id, item.price)}>
+                      <Image
+                        resizeMode="cover"
+                        style={body.icon}
+                        source={{
+                          uri: 'https://as2.ftcdn.net/v2/jpg/03/30/24/99/500_F_330249927_k8oy0p4zZqSAdxd1jxlhB0ZPT3fGLpjw.jpg',
+                        }}
+                      />
+                    </TouchableOpacity>
+                    <Text style={body.slText}>{getOrderQty(item._id)}</Text>
+                    <TouchableOpacity
+                      style={body.tru}
+                      onPress={() => editOder('+', item._id, item.price)}>
+                      <Image
+                        resizeMode="cover"
+                        style={body.icon}
+                        source={{
+                          uri: 'https://cdn-icons-png.flaticon.com/512/1828/1828925.png',
+                        }}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                ) : (
+                  <TouchableOpacity
+                    style={body.cong}
+                    onPress={() => editOder('+', item._id, item.price)}>
+                    <Image
+                      resizeMode="cover"
+                      style={body.icon}
+                      source={{
+                        uri: 'https://cdn-icons-png.flaticon.com/512/1828/1828925.png',
+                      }}
+                    />
+                  </TouchableOpacity>
+                )}
+              </View>
+            </View>
+          </View>
+          {item.choose.map(nameChoose => (
+            <View key={nameChoose._id}>
+              <Text>{nameChoose.name}</Text>
+              <FlatList
+                data={listChoose.filter(
+                  listchooseItem => listchooseItem.choose == nameChoose._id,
+                )}
+                keyExtractor={item => item._id.toString()}
+                renderItem={renderItemListChoose}
+              />
+            </View>
+          ))}
+        </View>
+      );
+    }
+    return (
+      <View style={popup.centeredView}>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            Alert.alert('Modal has been closed.');
+            setModalVisible(!modalVisible);
+          }}>
+          <View style={popup.bottomView}>
+            <View style={popup.modalView}>
+              <View style={popup.header}>
+                <Text> </Text>
+                <Text>Thêm món mới</Text>
+                <Text>X</Text>
+              </View>
+
+              <FlatList
+                data={foodItem}
+                keyExtractor={item => item._id.toString()}
+                renderItem={renderItem}
+              />
+              {/* <FlatList
+                // data={choose.filter(a => a._id.includes(foodItem.choose))}
+                data={foodItem.choose.map((item) => item
+                keyExtractor={item => item._id.toString()}
+                renderItem={renderItem}
+              /> */}
+              {/* <ScrollView>
+                <Text style={popup.modalText}>{foodItem.name}</Text>
+              </ScrollView> */}
+              <Pressable
+                style={[popup.button, popup.buttonClose]}
+                onPress={() => setModalVisible(!modalVisible)}>
+                <Text style={popup.textStyle}>Hide Modal</Text>
+              </Pressable>
+            </View>
+          </View>
+        </Modal>
+      </View>
+    );
+  }
   function RenderHeader() {
     return (
       <ImageBackground
         source={{uri: restaurant?.photo}}
         resizeMode="cover"
-        style={{
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          height: 230,
-        }}>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            paddingTop: SIZES.padding,
-          }}>
+        style={header.imageBG}>
+        <View style={header.viewHeader}>
           <TouchableOpacity
             style={styles.renderHeader}
             onPress={() => navigation.goBack()}>
@@ -125,101 +289,63 @@ export default function Restaurant({route, navigation}) {
   }
   function RenderFoodInfo() {
     const renderItemFood = ({item}) => (
-      <View
-        style={{
-          width: '100%',
-          marginBottom: SIZES.padding,
-          flexDirection: 'row',
-          borderBottomColor: COLORS.lightGray2,
-          borderBottomWidth: 1,
-          backgroundColor: COLORS.white,
-        }}>
-        <View
-          style={{
-            margin: SIZES.padding,
-            alignItems: 'center',
-          }}>
+      <View style={body.itemWrap}>
+        <View style={body.imageWrap}>
           <Image
             source={{uri: item.photo}}
             resizeMode="cover"
-            style={{
-              height: 100,
-              width: 100,
-            }}
+            style={body.image}
           />
         </View>
-        <View
-          style={{
-            marginLeft: SIZES.padding,
-            flexDirection: 'column',
-            justifyContent: 'space-around',
-            width: 250,
-          }}>
-          <Text style={{...FONTS.body3, fontWeight: 'bold'}}>{item.name}</Text>
-          <Text style={{fontSize: 13, width: '80%'}}>{item.description}</Text>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-            }}>
-            <Text
-              style={{
-                ...FONTS.body3,
-                color: COLORS.primary,
-                fontWeight: 'bold',
-              }}>
-              {item.price.toFixed(0).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}đ
-            </Text>
+        <View style={body.content}>
+          <Text style={body.foodName}>{item.name}</Text>
+          <Text style={body.description}>{item.description}</Text>
+          <View style={body.priceWrap}>
+            {item.price === item.lastPrice ? (
+              <View>
+                <Text style={body.price}>
+                  {item.price
+                    .toFixed(0)
+                    .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}
+                  đ
+                </Text>
+              </View>
+            ) : (
+              <View style={{flexDirection: 'row'}}>
+                <Text style={body.price1}>
+                  {item.price
+                    .toFixed(0)
+                    .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}
+                  đ
+                </Text>
+                <Text style={body.price}>
+                  {item.lastPrice
+                    .toFixed(0)
+                    .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}
+                  đ
+                </Text>
+              </View>
+            )}
             {getOrderQty(item._id) > 0 ? (
-              <View style={{flexDirection: 'row', marginRight: 10}}>
+              <View style={body.slWrap}>
                 <TouchableOpacity
-                  style={{
-                    borderColor: COLORS.darkgray,
-                    borderWidth: 1,
-                    width: 20,
-                    height: 20,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
+                  style={body.tru}
                   onPress={() => editOder('-', item._id, item.price)}>
                   <Image
                     resizeMode="cover"
-                    style={{
-                      height: 10,
-                      width: 10,
-                    }}
+                    style={body.icon}
                     source={{
                       uri: 'https://as2.ftcdn.net/v2/jpg/03/30/24/99/500_F_330249927_k8oy0p4zZqSAdxd1jxlhB0ZPT3fGLpjw.jpg',
                     }}
                   />
                 </TouchableOpacity>
-                <Text
-                  style={{
-                    borderColor: COLORS.darkgray,
-                    borderTopWidth: 1,
-                    borderBottomWidth: 1,
-                    width: 20,
-                    height: 20,
-                    textAlign: 'center',
-                  }}>
-                  {getOrderQty(item._id)}
-                </Text>
+                <Text style={body.slText}>{getOrderQty(item._id)}</Text>
                 <TouchableOpacity
-                  style={{
-                    borderColor: COLORS.darkgray,
-                    borderWidth: 1,
-                    width: 20,
-                    height: 20,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
+                  style={body.tru}
                   onPress={() => editOder('+', item._id, item.price)}>
                   <Image
                     resizeMode="cover"
-                    style={{
-                      height: 10,
-                      width: 10,
-                    }}
+                    style={body.icon}
                     source={{
                       uri: 'https://cdn-icons-png.flaticon.com/512/1828/1828925.png',
                     }}
@@ -228,22 +354,78 @@ export default function Restaurant({route, navigation}) {
               </View>
             ) : (
               <TouchableOpacity
-                style={{
-                  borderColor: COLORS.darkgray,
-                  borderWidth: 1,
-                  width: 20,
-                  height: 20,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginRight: SIZES.padding * 2,
-                }}
-                onPress={() => editOder('+', item._id, item.price)}>
+                style={body.cong}
+                onPress={() => {
+                  item.choose.length > 0
+                    ? showPopup(item._id)
+                    : editOder('+', item._id, item.price);
+                }}>
                 <Image
                   resizeMode="cover"
-                  style={{
-                    height: 10,
-                    width: 10,
+                  style={body.icon}
+                  source={{
+                    uri: 'https://cdn-icons-png.flaticon.com/512/1828/1828925.png',
                   }}
+                />
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
+      </View>
+    );
+
+    const renderItemCombo = ({item}) => (
+      <View style={body.itemWrap}>
+        <View style={body.imageWrap}>
+          <Image
+            source={{uri: item?.photo}}
+            resizeMode="cover"
+            style={body.image}
+          />
+        </View>
+        <View style={body.content}>
+          <Text style={body.foodName}>{item.name}</Text>
+          <Text style={body.description}>{item.descriptionCombo}</Text>
+          <View style={body.priceWrap}>
+            <Text style={body.price}>
+              {item.lastPrice
+                .toFixed(0)
+                .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}
+              đ
+            </Text>
+            {getOrderQty(item._id) > 0 ? (
+              <View style={body.slWrap}>
+                <TouchableOpacity
+                  style={body.tru}
+                  onPress={() => editOder('-', item._id, item.lastPrice)}>
+                  <Image
+                    resizeMode="cover"
+                    style={body.icon}
+                    source={{
+                      uri: 'https://as2.ftcdn.net/v2/jpg/03/30/24/99/500_F_330249927_k8oy0p4zZqSAdxd1jxlhB0ZPT3fGLpjw.jpg',
+                    }}
+                  />
+                </TouchableOpacity>
+                <Text style={body.slText}>{getOrderQty(item._id)}</Text>
+                <TouchableOpacity
+                  style={body.tru}
+                  onPress={() => editOder('+', item._id, item.lastPrice)}>
+                  <Image
+                    resizeMode="cover"
+                    style={body.icon}
+                    source={{
+                      uri: 'https://cdn-icons-png.flaticon.com/512/1828/1828925.png',
+                    }}
+                  />
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <TouchableOpacity
+                style={body.cong}
+                onPress={() => editOder('+', item._id, item.lastPrice)}>
+                <Image
+                  resizeMode="cover"
+                  style={body.icon}
                   source={{
                     uri: 'https://cdn-icons-png.flaticon.com/512/1828/1828925.png',
                   }}
@@ -267,8 +449,7 @@ export default function Restaurant({route, navigation}) {
         <Text
           style={{
             ...FONTS.body2,
-            textTransform: 'uppercase',
-            marginBottom: 15,
+            marginBottom: 10,
             color: COLORS.darkgray,
           }}>
           {item.name}
@@ -277,6 +458,11 @@ export default function Restaurant({route, navigation}) {
           data={food.filter(foodItem => foodItem.menu == item._id)}
           keyExtractor={item => item._id.toString()}
           renderItem={renderItemFood}
+        />
+        <FlatList
+          data={combo.filter(comboItem => comboItem.menu == item._id)}
+          keyExtractor={item => item._id.toString()}
+          renderItem={renderItemCombo}
         />
       </View>
     );
@@ -315,6 +501,7 @@ export default function Restaurant({route, navigation}) {
               paddingBottom: 30,
             }}
           />
+          <RenderPopUp foodInfo={id} />
         </View>
       </View>
     );
@@ -323,58 +510,19 @@ export default function Restaurant({route, navigation}) {
     return (
       <View>
         {getSumItem() > 0 ? (
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              height: 50,
-            }}>
+          <View style={order.viewWrap}>
             <View style={{paddingHorizontal: SIZES.padding * 2}}>
               <Image
                 source={icons.basket}
                 resizeMode="contain"
-                style={{
-                  tintColor: COLORS.primary,
-                  width: 30,
-                  height: 30,
-                }}
+                style={order.imageCart}
               />
-              <View
-                style={{
-                  position: 'absolute',
-                  top: -5,
-                  right: 7,
-                  backgroundColor: COLORS.primary,
-                  width: 15,
-                  height: 17,
-                  borderRadius: SIZES.radius,
-                }}>
-                <Text
-                  style={{
-                    color: COLORS.white,
-                    textAlign: 'center',
-                    fontSize: 12,
-                  }}>
-                  {getSumItem()}
-                </Text>
+              <View style={order.numberCart}>
+                <Text style={order.numberCartText}>{getSumItem()}</Text>
               </View>
             </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              <Text
-                style={{
-                  ...FONTS.body3,
-                  color: COLORS.primary,
-                  fontWeight: 'bold',
-                  paddingRight: 10,
-                }}>
-                {getTotal()}đ
-              </Text>
+            <View style={order.totalPrice}>
+              <Text style={order.priceText}>{getTotal()}đ</Text>
               <TouchableOpacity
                 style={{
                   padding: SIZES.padding,
@@ -405,6 +553,7 @@ export default function Restaurant({route, navigation}) {
         {RenderFoodInfo()}
       </ScrollView>
       {RenderOder()}
+      {/* {RenderPopUp()} */}
     </View>
   );
 }
@@ -526,5 +675,194 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
     alignItems: 'center',
     borderRadius: SIZES.radius,
+  },
+});
+
+const header = StyleSheet.create({
+  imageBG: {
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    height: 230,
+  },
+  viewHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingTop: SIZES.padding,
+  },
+});
+
+const order = StyleSheet.create({
+  viewWrap: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    height: 50,
+  },
+  imageCart: {
+    tintColor: COLORS.primary,
+    width: 30,
+    height: 30,
+  },
+  numberCart: {
+    position: 'absolute',
+    top: -5,
+    right: 7,
+    backgroundColor: COLORS.primary,
+    width: 15,
+    height: 17,
+    borderRadius: SIZES.radius,
+  },
+  numberCartText: {
+    color: COLORS.white,
+    textAlign: 'center',
+    fontSize: 12,
+  },
+  totalPrice: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  priceText: {
+    ...FONTS.body3,
+    color: COLORS.primary,
+    fontWeight: 'bold',
+    paddingRight: 10,
+  },
+});
+
+const body = StyleSheet.create({
+  itemWrap: {
+    width: '100%',
+    marginBottom: SIZES.padding,
+    flexDirection: 'row',
+    borderBottomColor: COLORS.lightGray2,
+    borderBottomWidth: 1,
+    backgroundColor: COLORS.white,
+  },
+  imageWrap: {
+    margin: SIZES.padding,
+    alignItems: 'center',
+  },
+  image: {
+    height: 90,
+    width: 90,
+  },
+  content: {
+    marginLeft: SIZES.padding,
+    flexDirection: 'column',
+    justifyContent: 'space-around',
+    width: '70%',
+  },
+  foodName: {
+    ...FONTS.body3,
+    fontWeight: 'bold',
+  },
+  description: {
+    fontSize: 13,
+    width: '90%',
+  },
+  priceWrap: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  price: {
+    ...FONTS.body3,
+    color: COLORS.primary,
+    fontWeight: 'bold',
+  },
+  price1: {
+    ...FONTS.body3,
+    color: COLORS.black,
+    paddingRight: 10,
+    textDecorationLine: 'line-through',
+  },
+  slWrap: {
+    flexDirection: 'row',
+    marginRight: 10,
+  },
+  tru: {
+    borderColor: COLORS.darkgray,
+    borderWidth: 1,
+    width: 20,
+    height: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cong: {
+    borderColor: COLORS.darkgray,
+    borderWidth: 1,
+    width: 20,
+    height: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: SIZES.padding * 1.5,
+  },
+  icon: {
+    height: 10,
+    width: 10,
+  },
+  slText: {
+    borderColor: COLORS.darkgray,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    width: 20,
+    height: 20,
+    textAlign: 'center',
+  },
+});
+
+const popup = StyleSheet.create({
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  bottomView: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+  modalView: {
+    width: '100%',
+    height: '80%',
+    backgroundColor: 'white',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: '#F194FF',
+  },
+  buttonClose: {
+    backgroundColor: '#2196F3',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+    margin: 30,
+  },
+  header: {
+    height: 50,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderBottomColor: COLORS.lightGray,
+    borderBottomWidth: 1,
   },
 });

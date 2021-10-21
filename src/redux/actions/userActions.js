@@ -6,6 +6,7 @@ import {
   REGISTER_SUCCESS,
   REGISTER_FAIL,
 } from './types';
+import {Alert} from 'react-native';
 
 import axios from 'axios';
 
@@ -47,6 +48,24 @@ export const loadUser = () => {
 };
 
 export const loginUser = (phoneNumber, password) => {
+  // try {
+  //   const response = await axios.post(`${API_URI}/auth/login`, {
+  //     phoneNumber,
+  //     password,
+  //   });
+  //   if (response.data.success === true) {
+  //     setAccecssAuth(response.data.accessToken);
+  //     // await dispatch(loadUser());
+  //     if (response.data.success === true) {
+  //       navigate('Tabs');
+  //     }
+  //   }
+  //   return response.data;
+  // } catch (error) {
+  //   console.log('đăng nhập thất bại');
+  //   console.log('lỗi', error.response.data);
+  //   return error.response.data;
+  // }
   return async dispatch => {
     try {
       const response = await axios.post(`${API_URI}/auth/login`, {
@@ -59,6 +78,7 @@ export const loginUser = (phoneNumber, password) => {
           payload: {loginSuccess: response.data},
         });
         setAccecssAuth(response.data.accessToken);
+        Alert.alert('Thông báo', response.data.message);
         await dispatch(loadUser());
         if (response.data.success === true) {
           navigate('Tabs');
@@ -66,13 +86,21 @@ export const loginUser = (phoneNumber, password) => {
       }
       return response.data;
     } catch (error) {
-      if (error.response.data) {
-        dispatch({
-          type: USER_LOADED_FAIL,
-          payload: {loginSuccess: error.response.data},
-        });
-        return error.response.data;
-      } else return {success: false, message: error.message};
+      console.log('đăng nhập thất bại');
+      console.log('lỗi', error.response.data);
+      Alert.alert('Thông báo', error.response.data.message);
+      dispatch({
+        type: USER_LOADED_FAIL,
+        payload: {loginFail: error.response.data},
+      });
+      return error.response.data;
+      // if (error.response.data) {
+      //   dispatch({
+      //     type: USER_LOADING,
+      //     payload: {loginSuccess: error.response.data},
+      //   });
+      //   return error.response.data;
+      // } else return {success: false, message: error.message};
     }
   };
 };
@@ -121,6 +149,7 @@ export const registerUser = (
       });
       if (response.data.success) {
         console.log('dk thanh cong', response.data);
+        Alert.alert('Thông báo', response.data.message);
         dispatch({
           type: REGISTER_SUCCESS,
           payload: {loginSuccess: response.data},
@@ -137,6 +166,7 @@ export const registerUser = (
           type: REGISTER_FAIL,
           payload: {loginSuccess: error.response.data},
         });
+        Alert.alert('Thông báo', error.response.data.message);
         return error.response.data;
       } else return {success: false, message: error.message};
     }

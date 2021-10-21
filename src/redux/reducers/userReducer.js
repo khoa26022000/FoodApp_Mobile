@@ -7,6 +7,7 @@ const intialState = {
   user: [],
   isAuthenticated: false,
   loginSuccess: [],
+  loginFail: [],
 };
 
 export default (state = intialState, action) => {
@@ -16,7 +17,7 @@ export default (state = intialState, action) => {
     case USER_LOADING:
       return {...state, loginSuccess: action.payload};
     case USER_LOADED_FAIL:
-      return {...state, loginSuccess: action.payload};
+      return {...state, loginFail: action.payload};
     default:
       return state;
   }

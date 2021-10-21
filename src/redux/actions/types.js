@@ -57,6 +57,25 @@ export const CHECK_OUT = 'CHECK_OUT';
 export const GET_ERRORS = 'GET_ERRORS';
 export const CLEAR_ERRORS = 'CLEAR_ERRORS';
 
+// combo
+export const COMBO_LOADING = 'COMBO_LOADING';
+export const COMBO_LOADED_SUCCESS = 'COMBO_LOADED_SUCCESS';
+export const COMBO_LOADED_FAIL = 'COMBO_LOADED_FAIL';
+export const COMBO_SENT = 'COMBO_SENT';
+export const COMBO_SENDING = 'COMBO_SENDING';
+
+// choose
+export const CHOOSE_LOADING = 'CHOOSE_LOADING';
+export const CHOOSE_LOADED_SUCCESS = 'CHOOSE_LOADED_SUCCESS';
+export const CHOOSE_LOADED_FAIL = 'CHOOSE_LOADED_FAIL';
+export const CHOOSE_SENT = 'CHOOSE_SENT';
+export const CHOOSE_SENDING = 'CHOOSE_SENDING';
+
+export const LISTCHOOSE_LOADING = 'LISTCHOOSE_LOADING';
+export const LISTCHOOSE_LOADED_SUCCESS = 'LISTCHOOSE_LOADED_SUCCESS';
+export const LISTCHOOSE_LOADED_FAIL = 'LISTCHOOSE_LOADED_FAIL';
+export const LISTCHOOSE_SENT = 'LISTCHOOSE_SENT';
+export const LISTCHOOSE_SENDING = 'LISTCHOOSE_SENDING';
 // action props
 // export const ActionProps = {
 //   type: any,

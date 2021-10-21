@@ -6,6 +6,8 @@ import foodReducer from './foodReducer';
 import menuReducer from './menuReducer';
 import userReducer from './userReducer';
 import restaurantReducer from './restaurantReducer';
+import comboReducer from './comboReducer';
+import listChooseReducer from './listChooseReducer';
 
 export default combineReducers({
   restaurant: restaurantReducer,
@@ -15,4 +17,6 @@ export default combineReducers({
   auth: authReducer,
   user: userReducer,
   error: errorReducer,
+  combo: comboReducer,
+  listChoose: listChooseReducer,
 });

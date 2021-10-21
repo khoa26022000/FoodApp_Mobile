@@ -13,7 +13,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {loginUser} from '../redux/actions/userActions';
 
 export default function Login({navigation}) {
-  const {loginSuccess} = useSelector(state => state.user);
+  const {loginSuccess, loginFail} = useSelector(state => state.user);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
   const dispatch = useDispatch();
@@ -24,11 +24,13 @@ export default function Login({navigation}) {
   function HandleSubmit() {
     try {
       dispatch(loginUser(phoneNumber, password));
-      if (loginSuccess.loginSuccess.success === true) {
-        Alert.alert('Thông báo', loginSuccess.loginSuccess.message);
-      } else {
-        Alert.alert('Thông báo', loginSuccess.loginSuccess.message);
-      }
+      console.log('dung', loginSuccess.loginSuccess);
+      console.log('sai', loginFail.loginFail);
+      // if (loginSuccess.loginSuccess.success === true) {
+      //   Alert.alert('Thông báo', loginSuccess.loginSuccess.message);
+      // } else {
+      //   Alert.alert('Thông báo', loginFail.loginFail.message);
+      // }
     } catch (error) {
       console.log(error);
     }
