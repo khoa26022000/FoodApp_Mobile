@@ -13,6 +13,7 @@ import {
   Modal,
   Alert,
 } from 'react-native';
+import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import {icons, COLORS, SIZES, FONTS} from '../constants';
 
 import {useSelector, useDispatch} from 'react-redux';
@@ -25,6 +26,7 @@ import {getListChoose} from '../redux/actions/listChooseActions';
 export default function Restaurant({route, navigation}) {
   const [restaurant, setRestaurant] = useState(null);
   const [oderItems, setOderItems] = useState([]);
+  const [oderItemsPopUp, setOderItemsPopUp] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [id, setId] = useState();
   // const [isShow, setIsShow] = useState(true);
@@ -40,7 +42,7 @@ export default function Restaurant({route, navigation}) {
   const data = route.params.item;
 
   useEffect(() => {
-    dispatch(getFood());
+    dispatch(getFood(data._id));
     dispatch(getCombo());
     dispatch(getMenuByIdRestaurant(data._id));
     dispatch(getChooseBbyRestaurant(data._id));
@@ -51,9 +53,45 @@ export default function Restaurant({route, navigation}) {
     setRestaurant(item);
   }, [route.params]);
 
-  function showPopup(foodId) {
+  function closePopUp() {
+    setOderItems(oderItemsPopUp);
+
+    setModalVisible(!modalVisible);
+  }
+  function showPopup(action, foodId, price) {
     setModalVisible(true);
     setId(foodId);
+    setOderItemsPopUp([]);
+  }
+
+  function editOderPopUp(action, foodId, price) {
+    let orderList = oderItemsPopUp.slice();
+    let item = oderItemsPopUp.filter(a => a.foodId == foodId);
+    if (action == '+') {
+      if (item.length > 0) {
+        let newQty = item[0].qty + 1;
+        item[0].qty = newQty;
+        item[0].total = item[0].qty * price;
+      } else {
+        const newItem = {
+          foodId: foodId,
+          qty: 1,
+          price: price,
+          total: price,
+        };
+        orderList.push(newItem);
+      }
+      setOderItemsPopUp(orderList);
+    } else {
+      if (item.length > 0) {
+        if (item[0]?.qty > 1) {
+          let newQty = item[0].qty - 1;
+          item[0].qty = newQty;
+          item[0].total = item[0].qty * price;
+        }
+      }
+      setOderItemsPopUp(orderList);
+    }
   }
   function editOder(action, foodId, price) {
     let orderList = oderItems.slice();
@@ -104,18 +142,40 @@ export default function Restaurant({route, navigation}) {
     return item.toFixed(0).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
   }
 
-  function RenderPopUp({foodInfo}) {
-    const [foodItem, setFoodItem] = useState();
-    useEffect(() => {
-      const data1 = food.filter(a => a._id === foodInfo);
-      setFoodItem(data1);
-    }, [foodInfo]);
-    console.log(foodItem);
+  function getSumItemPopUp() {
+    let item = oderItemsPopUp.reduce((a, b) => 0 + b.qty, 0);
+    return item;
+  }
+  function getTotalItem() {
+    let item = oderItemsPopUp.reduce((a, b) => 0 + b.total, 0);
+    return item.toFixed(0).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+  }
+  function RenderPopUp() {
     function renderItemListChoose({item}) {
       return (
-        <View>
-          <Text>{item.name}</Text>
-          <Text>{item.price}</Text>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            height: 60,
+            borderBottomWidth: 1,
+            borderBottomColor: COLORS.lightGray,
+            marginHorizontal: SIZES.padding,
+          }}>
+          <View style={{flexDirection: 'column'}}>
+            <Text style={{fontWeight: 'bold'}}>{item.name}</Text>
+            <Text>
+              {item.price.toFixed(0).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}đ
+            </Text>
+          </View>
+
+          <BouncyCheckbox
+            size={20}
+            fillColor={COLORS.primary}
+            unfillColor="#FFFFFF"
+            iconStyle={{borderColor: COLORS.primary}}
+          />
         </View>
       );
     }
@@ -160,36 +220,27 @@ export default function Restaurant({route, navigation}) {
                     </Text>
                   </View>
                 )}
-                {getOrderQty(item._id) > 0 ? (
-                  <View style={body.slWrap}>
-                    <TouchableOpacity
-                      style={body.tru}
-                      onPress={() => editOder('-', item._id, item.price)}>
-                      <Image
-                        resizeMode="cover"
-                        style={body.icon}
-                        source={{
-                          uri: 'https://as2.ftcdn.net/v2/jpg/03/30/24/99/500_F_330249927_k8oy0p4zZqSAdxd1jxlhB0ZPT3fGLpjw.jpg',
-                        }}
-                      />
-                    </TouchableOpacity>
-                    <Text style={body.slText}>{getOrderQty(item._id)}</Text>
-                    <TouchableOpacity
-                      style={body.tru}
-                      onPress={() => editOder('+', item._id, item.price)}>
-                      <Image
-                        resizeMode="cover"
-                        style={body.icon}
-                        source={{
-                          uri: 'https://cdn-icons-png.flaticon.com/512/1828/1828925.png',
-                        }}
-                      />
-                    </TouchableOpacity>
-                  </View>
-                ) : (
+
+                <View style={body.slWrap}>
                   <TouchableOpacity
-                    style={body.cong}
-                    onPress={() => editOder('+', item._id, item.price)}>
+                    style={body.tru}
+                    onPress={() =>
+                      editOderPopUp('-', item._id, item.lastPrice)
+                    }>
+                    <Image
+                      resizeMode="cover"
+                      style={body.icon}
+                      source={{
+                        uri: 'https://as2.ftcdn.net/v2/jpg/03/30/24/99/500_F_330249927_k8oy0p4zZqSAdxd1jxlhB0ZPT3fGLpjw.jpg',
+                      }}
+                    />
+                  </TouchableOpacity>
+                  <Text style={body.slText}>{getSumItemPopUp(item._id)}</Text>
+                  <TouchableOpacity
+                    style={body.tru}
+                    onPress={() =>
+                      editOderPopUp('+', item._id, item.lastPrice)
+                    }>
                     <Image
                       resizeMode="cover"
                       style={body.icon}
@@ -198,17 +249,33 @@ export default function Restaurant({route, navigation}) {
                       }}
                     />
                   </TouchableOpacity>
-                )}
+                </View>
               </View>
             </View>
           </View>
           {item.choose.map(nameChoose => (
             <View key={nameChoose._id}>
-              <Text>{nameChoose.name}</Text>
+              <View
+                style={{
+                  backgroundColor: COLORS.lightGray,
+                  height: 40,
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                }}>
+                <Text
+                  style={{
+                    ...FONTS.body3,
+                    color: COLORS.darkgray,
+                    marginHorizontal: SIZES.padding,
+                  }}>
+                  {nameChoose.name}
+                </Text>
+              </View>
               <FlatList
                 data={listChoose.filter(
                   listchooseItem => listchooseItem.choose == nameChoose._id,
                 )}
+                listKey={item => item._id.toString()}
                 keyExtractor={item => item._id.toString()}
                 renderItem={renderItemListChoose}
               />
@@ -217,6 +284,13 @@ export default function Restaurant({route, navigation}) {
         </View>
       );
     }
+    // const renderItem = ({item}) => {
+    //   return (
+    //     <View>
+    //       <Text>{item.name}</Text>
+    //     </View>
+    //   );
+    // };
     return (
       <View style={popup.centeredView}>
         <Modal
@@ -227,33 +301,48 @@ export default function Restaurant({route, navigation}) {
             Alert.alert('Modal has been closed.');
             setModalVisible(!modalVisible);
           }}>
-          <View style={popup.bottomView}>
-            <View style={popup.modalView}>
-              <View style={popup.header}>
-                <Text> </Text>
-                <Text>Thêm món mới</Text>
-                <Text>X</Text>
-              </View>
+          <View style={popup.centeredView}>
+            <View style={popup.bottomView}>
+              <View style={popup.modalView}>
+                <View style={popup.header}>
+                  <Text> </Text>
+                  <Text>Thêm món mới</Text>
+                  <Pressable
+                    style={{width: 30}}
+                    onPress={() => setModalVisible(!modalVisible)}>
+                    <Text style={{...FONTS.h2, marginRight: SIZES.padding}}>
+                      X
+                    </Text>
+                  </Pressable>
+                </View>
+                <FlatList
+                  data={food.filter(a => a._id == id)}
+                  // listKey={item => item._id.toString()}
+                  keyExtractor={item => item._id.toString()}
+                  renderItem={renderItem}
+                />
 
-              <FlatList
-                data={foodItem}
-                keyExtractor={item => item._id.toString()}
-                renderItem={renderItem}
-              />
-              {/* <FlatList
-                // data={choose.filter(a => a._id.includes(foodItem.choose))}
-                data={foodItem.choose.map((item) => item
-                keyExtractor={item => item._id.toString()}
-                renderItem={renderItem}
-              /> */}
-              {/* <ScrollView>
-                <Text style={popup.modalText}>{foodItem.name}</Text>
-              </ScrollView> */}
-              <Pressable
-                style={[popup.button, popup.buttonClose]}
-                onPress={() => setModalVisible(!modalVisible)}>
-                <Text style={popup.textStyle}>Hide Modal</Text>
-              </Pressable>
+                <View
+                  style={{
+                    width: '100%',
+                    borderTopWidth: 1,
+                    borderTopColor: COLORS.lightGray,
+                  }}>
+                  <TouchableOpacity
+                    style={{
+                      margin: SIZES.padding * 2,
+                      backgroundColor: COLORS.primary,
+                      height: 40,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}
+                    onPress={() => closePopUp()}>
+                    <Text style={{color: COLORS.white, ...FONTS.h4}}>
+                      Thêm vào giỏ {getTotalItem()}đ
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
             </View>
           </View>
         </Modal>
@@ -330,7 +419,7 @@ export default function Restaurant({route, navigation}) {
               <View style={body.slWrap}>
                 <TouchableOpacity
                   style={body.tru}
-                  onPress={() => editOder('-', item._id, item.price)}>
+                  onPress={() => editOder('-', item._id, item.lastPrice)}>
                   <Image
                     resizeMode="cover"
                     style={body.icon}
@@ -342,7 +431,7 @@ export default function Restaurant({route, navigation}) {
                 <Text style={body.slText}>{getOrderQty(item._id)}</Text>
                 <TouchableOpacity
                   style={body.tru}
-                  onPress={() => editOder('+', item._id, item.price)}>
+                  onPress={() => editOder('+', item._id, item.lastPrice)}>
                   <Image
                     resizeMode="cover"
                     style={body.icon}
@@ -357,8 +446,8 @@ export default function Restaurant({route, navigation}) {
                 style={body.cong}
                 onPress={() => {
                   item.choose.length > 0
-                    ? showPopup(item._id)
-                    : editOder('+', item._id, item.price);
+                    ? showPopup('+', item._id, item.lastPrice)
+                    : editOder('+', item._id, item.lastPrice);
                 }}>
                 <Image
                   resizeMode="cover"
@@ -385,7 +474,7 @@ export default function Restaurant({route, navigation}) {
         </View>
         <View style={body.content}>
           <Text style={body.foodName}>{item.name}</Text>
-          <Text style={body.description}>{item.descriptionCombo}</Text>
+          <Text style={body.description}>{item.description}</Text>
           <View style={body.priceWrap}>
             <Text style={body.price}>
               {item.lastPrice
@@ -455,14 +544,16 @@ export default function Restaurant({route, navigation}) {
           {item.name}
         </Text>
         <FlatList
-          data={food.filter(foodItem => foodItem.menu == item._id)}
-          keyExtractor={item => item._id.toString()}
-          renderItem={renderItemFood}
-        />
-        <FlatList
           data={combo.filter(comboItem => comboItem.menu == item._id)}
           keyExtractor={item => item._id.toString()}
+          listKey={item => item._id.toString()}
           renderItem={renderItemCombo}
+        />
+        <FlatList
+          data={food.filter(foodItem => foodItem.menu == item._id)}
+          keyExtractor={item => item._id.toString()}
+          listKey={item => item._id.toString()}
+          renderItem={renderItemFood}
         />
       </View>
     );
@@ -501,7 +592,7 @@ export default function Restaurant({route, navigation}) {
               paddingBottom: 30,
             }}
           />
-          <RenderPopUp foodInfo={id} />
+          {/* <RenderPopUp foodInfo={id} /> */}
         </View>
       </View>
     );
@@ -553,7 +644,7 @@ export default function Restaurant({route, navigation}) {
         {RenderFoodInfo()}
       </ScrollView>
       {RenderOder()}
-      {/* {RenderPopUp()} */}
+      {RenderPopUp()}
     </View>
   );
 }
@@ -816,9 +907,10 @@ const popup = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 22,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
   },
   bottomView: {
+    width: '100%',
     flex: 1,
     justifyContent: 'flex-end',
     alignItems: 'center',

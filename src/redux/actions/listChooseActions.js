@@ -10,7 +10,6 @@ export const getListChoose = () => {
   return async dispatch => {
     try {
       const response = await axios.get(`${API_URI}/listChoose`);
-      console.log('a', response.data.listChoose);
       if (response.data.success)
         dispatch({
           type: LISTCHOOSE_LOADED_SUCCESS,
