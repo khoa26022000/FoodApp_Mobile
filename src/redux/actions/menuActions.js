@@ -7,7 +7,7 @@ export const getMenuByIdRestaurant = restaurant => {
     try {
       const response = await axios.get(`${API_URI}/menu/${restaurant}`);
       if (response.data.success)
-        dispatch({type: MENU_LOADED_SUCCESS, payload: response.data.menu});
+        dispatch({type: MENU_LOADED_SUCCESS, payload: response.data?.menu});
     } catch (error) {
       dispatch({type: MENU_LOADED_FAIL});
     }

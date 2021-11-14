@@ -76,6 +76,11 @@ export const LISTCHOOSE_LOADED_SUCCESS = 'LISTCHOOSE_LOADED_SUCCESS';
 export const LISTCHOOSE_LOADED_FAIL = 'LISTCHOOSE_LOADED_FAIL';
 export const LISTCHOOSE_SENT = 'LISTCHOOSE_SENT';
 export const LISTCHOOSE_SENDING = 'LISTCHOOSE_SENDING';
+
+/// Cart food and combo
+export const CART_LOADED_SUCCESS = 'CART_LOADED_SUCCESS';
+export const CART_LOADED_FAIL = 'CART_LOADED_FAIL';
+
 // action props
 // export const ActionProps = {
 //   type: any,

@@ -12,7 +12,6 @@ import {icons, COLORS, SIZES, FONTS} from '../../constants';
 import {useSelector} from 'react-redux';
 
 export default function OderDetail({restaurant, navigation}) {
-  const data = restaurant.data;
   const {user} = useSelector(state => state.user);
   function getDate() {
     var date = new Date().getDate();
@@ -81,7 +80,7 @@ export default function OderDetail({restaurant, navigation}) {
           </Text>
         </View>
         <View style={styleInfoFood.restaurant}>
-          <Text style={styleInfoFood.text}>{data.name}</Text>
+          <Text style={styleInfoFood.text}>{restaurant.name}</Text>
         </View>
       </View>
     );

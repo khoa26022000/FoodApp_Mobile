@@ -12,12 +12,15 @@ import {
 import Login from './Login';
 import OderDetail from './components/OderDetail';
 import {icons, COLORS, SIZES, FONTS} from '../constants';
-import {useSelector, useDispatch} from 'react-redux';
 
 export default function OderDelivery({route, navigation}) {
-  const data = route.params;
+  console.log('router', route.params.idParams.name);
+  const data = route.params.idParams;
   return (
     <SafeAreaView style={styles.container}>
+      {/* <View>
+        <Text>ok delivery</Text>
+      </View> */}
       <OderDetail restaurant={data} navigation={navigation} />
       {/* {user.isAuthenticated === true ? (
         <OderDetail restaurant={data} navigation={navigation} />
