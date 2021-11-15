@@ -9,7 +9,7 @@ const ItemCombo = memo(function ItemCombo({item, foodCart, idParams}) {
   const dispatch = useDispatch();
 
   function getTotalItem(idFood) {
-    let item = foodCart.foods
+    let item = foodCart?.foods
       ?.filter(food => food.food._id === idFood)
       ?.reduce((total, cur) => total + cur.number, 0);
     return item;

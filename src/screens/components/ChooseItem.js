@@ -75,9 +75,7 @@ const ChooseItem = memo(function ChooseItem({
                 <Image
                   resizeMode="cover"
                   style={{width: 20, height: 20, tintColor: COLORS.primary}}
-                  source={{
-                    uri: 'https://cdn-icons.flaticon.com/png/512/3031/premium/3031130.png?token=exp=1636897931~hmac=412ad30fc26cb0dc871b579de908e0c3',
-                  }}
+                  source={icons.checked}
                 />
               }
               uncheckedIcon={

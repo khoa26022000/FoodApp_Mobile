@@ -1,21 +1,18 @@
-import React, {memo, useState} from 'react';
+import React, {memo, useState, useMemo} from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   Image,
-  ImageBackground,
-  FlatList,
-  SectionList,
   ScrollView,
   Pressable,
-  Modal,
-  Alert,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import {icons, COLORS, SIZES, FONTS} from '../../constants';
 import ChooseList from './ChooseList';
+import {useDispatch} from 'react-redux';
+import {addFoodToCart, removeFoodToCart} from '../../redux/actions/cartActions';
 
 const PopupFood = memo(function PopupFood({
   item,
@@ -23,13 +20,33 @@ const PopupFood = memo(function PopupFood({
   handleAddToCart,
   handleRemoveToCart,
   getTotalItem,
+  getChooseItem,
 }) {
   const [oderItemsPopUp, setOderItemsPopUp] = useState([]);
   const [checked, setChecked] = useState([]);
+  const dispatch = useDispatch();
+
+  const choosePrice = useMemo(() => {
+    return checked?.reduce((total, cur) => total + cur.price, 0) || 0;
+  }, [checked]);
+
   function getSumItemPopUp(id) {
-    let item = getTotalItem(id._id) * id.lastPrice;
+    let item = getTotalItem(id._id) * (id.lastPrice + getChooseItem(id._id));
+    console.log('gia tong', item);
     return item;
   }
+
+  const handleSubmit = () => {
+    const formatListChoose = [...new Set(checked)];
+    const formatFood = {...item, listChoose: formatListChoose};
+    dispatch(addFoodToCart(formatFood));
+  };
+  const handleSubmitPopup = () => {
+    const formatListChoose = [...new Set(checked)];
+    const formatFood = {...item, listChoose: formatListChoose};
+    dispatch(addFoodToCart(formatFood));
+    setOpen(!setOpen);
+  };
   return (
     <View style={popup.centeredView}>
       <View style={popup.bottomView}>
@@ -82,7 +99,7 @@ const PopupFood = memo(function PopupFood({
                   )}
 
                   <View style={body.slWrap}>
-                    <TouchableOpacity
+                    {/* <TouchableOpacity
                       style={body.tru}
                       onPress={handleRemoveToCart}>
                       <Image
@@ -94,9 +111,7 @@ const PopupFood = memo(function PopupFood({
                       />
                     </TouchableOpacity>
                     <Text style={body.slText}>{getTotalItem(item._id)}</Text>
-                    <TouchableOpacity
-                      style={body.tru}
-                      onPress={handleAddToCart}>
+                    <TouchableOpacity style={body.tru} onPress={handleSubmit}>
                       <Image
                         resizeMode="cover"
                         style={body.icon}
@@ -104,7 +119,7 @@ const PopupFood = memo(function PopupFood({
                           uri: 'https://cdn-icons-png.flaticon.com/512/1828/1828925.png',
                         }}
                       />
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                   </View>
                 </View>
               </View>
@@ -119,27 +134,25 @@ const PopupFood = memo(function PopupFood({
             />
           </ScrollView>
           <View>
-            {getTotalItem(item._id) > 0 ? (
-              <View style={order.viewWrap}>
-                <TouchableOpacity
-                  style={{
-                    backgroundColor: COLORS.primary,
-                    height: 40,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    marginHorizontal: SIZES.padding,
-                  }}
-                  onPress={() => setOpen(!setOpen)}>
-                  <Text style={{color: COLORS.white}}>
-                    Thêm vào giỏ hàng{' '}
-                    {getSumItemPopUp(item)
-                      .toFixed(0)
-                      .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}
-                    đ
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            ) : null}
+            <View style={order.viewWrap}>
+              <TouchableOpacity
+                style={{
+                  backgroundColor: COLORS.primary,
+                  height: 40,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginHorizontal: SIZES.padding,
+                }}
+                onPress={handleSubmitPopup}>
+                <Text style={{color: COLORS.white}}>
+                  Thêm vào giỏ hàng{' '}
+                  {(item.lastPrice + choosePrice)
+                    .toFixed(0)
+                    .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}
+                  đ
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </View>
@@ -152,6 +165,7 @@ PopupFood.propTypes = {
   handleAddToCart: PropTypes.func,
   handleRemoveToCart: PropTypes.func,
   getTotalItem: PropTypes.func,
+  getChooseItem: PropTypes.func,
 };
 
 const popup = StyleSheet.create({

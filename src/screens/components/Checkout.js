@@ -11,15 +11,20 @@ const Checkout = memo(function Checkout({
 }) {
   console.log('user', user.isAuthenticated);
   function getTotalItem() {
-    let item = foodCart.foods
+    let item = foodCart?.foods
       ?.filter(food => food.food.restaurant === idParams._id)
       ?.reduce((total, cur) => total + cur.number, 0);
     return item;
   }
   function getTotalPrice() {
-    let item = foodCart.foods
+    let item = foodCart?.foods
       ?.filter(food => food.food.restaurant === idParams._id)
-      ?.reduce((total, cur) => total + cur.food.lastPrice * cur.number, 0);
+      ?.reduce(
+        (total, cur) =>
+          (total + cur.food.lastPrice + cur.priceChoose) * cur.number,
+        0,
+      );
+    console.log('giaa', item);
     return item;
   }
   return (

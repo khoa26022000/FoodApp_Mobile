@@ -20,9 +20,17 @@ const ItemFood = memo(function ItemFood({item, foodCart, idParams}) {
   const [open, setOpen] = useState(false);
 
   function getTotalItem(idFood) {
-    let item = foodCart.foods
+    let item = foodCart?.foods
       ?.filter(food => food.food._id === idFood)
       ?.reduce((total, cur) => total + cur.number, 0);
+    return item;
+  }
+
+  function getChooseItem(idFood) {
+    let item = foodCart?.foods
+      ?.filter(food => food.food._id === idFood)
+      ?.reduce((total, cur) => total + cur.priceChoose, 0);
+    console.log('gia choose', item);
     return item;
   }
 
@@ -91,7 +99,7 @@ const ItemFood = memo(function ItemFood({item, foodCart, idParams}) {
                 />
               </TouchableOpacity>
               <Text style={body.slText}>{getTotalItem(item._id)}</Text>
-              <TouchableOpacity style={body.tru} onPress={handleAddToCart}>
+              <TouchableOpacity style={body.tru} onPress={handleAddToCartPopup}>
                 <Image
                   resizeMode="cover"
                   style={body.icon}
@@ -128,6 +136,7 @@ const ItemFood = memo(function ItemFood({item, foodCart, idParams}) {
           handleAddToCart={handleAddToCartPopup}
           handleRemoveToCart={handleRemoveToCart}
           getTotalItem={getTotalItem}
+          getChooseItem={getChooseItem}
         />
       </Modal>
     </View>
