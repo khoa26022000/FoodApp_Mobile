@@ -10,9 +10,9 @@ export const removeAccecssAuth = async () => {
 
 export const getAccessAuth = async () => {
   const value = await AsyncStorage.getItem('auth');
-  if (value !== null) {
-    console.log('value', value);
-  }
+  // if (value !== null) {
+  //   console.log('value', value);
+  // }
   return value;
 };
 

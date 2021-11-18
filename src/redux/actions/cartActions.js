@@ -1,10 +1,21 @@
-import {CART_LOADED_SUCCESS, CART_LOADED_FAIL, API_URI} from './types';
+import {
+  CART_LOADED_SUCCESS,
+  CART_LOADED_FAIL,
+  ORDER_LOADED_SUCCESS,
+  ORDER_LOADED_FAIL,
+  API_URI,
+} from './types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import setAuthToken from '../../utils/setAuthToken';
 import {
   getAccessCart,
   setAccessCart,
   deleteAccessCart,
+  getAccessAuth,
 } from '../../utils/asyncStore';
+import axios from 'axios';
+import {Alert} from 'react-native';
+import {navigate} from '../../navigation/rootNavigation';
 
 export const loadFoodToCart = () => {
   return async dispatch => {
@@ -48,7 +59,7 @@ export const addFoodToCart = state => {
         cart.foods[index].number++;
         cart.total += state.lastPrice + priceInListChoose;
       }
-      console.log('cart', cart);
+      console.log('cart', cart.foods.food);
       setAccessCart(cart);
       dispatch({type: CART_LOADED_SUCCESS, payload: cart});
     } catch (error) {
@@ -89,6 +100,71 @@ export const removeFoodToCart = state => {
       dispatch({
         type: CART_LOADED_FAIL,
       });
+    }
+  };
+};
+
+export const clearFoodToCart = state => {
+  return async dispatch => {
+    try {
+      //   const cartLocal = getAccessCart();
+      const cartLocal1 = await AsyncStorage.getItem('cart');
+      const cartLocal = JSON.parse(cartLocal1);
+      const cart =
+        cartLocal === null ? {foods: [], number: 0, total: 0} : cartLocal;
+      const index = cart.foods.findIndex(x => x.food._id === state._id);
+      cart.foods.splice(index, 1);
+      setAccessCart(cart);
+      dispatch({type: CART_LOADED_SUCCESS, payload: cart});
+    } catch (error) {
+      console.log('lỗi');
+      dispatch({
+        type: CART_LOADED_FAIL,
+      });
+    }
+  };
+};
+
+export const clearCartToRestaurant = state => {
+  return async dispatch => {
+    try {
+      //   const cartLocal = getAccessCart();
+      const cartLocal1 = await AsyncStorage.getItem('cart');
+      const cartLocal = JSON.parse(cartLocal1);
+      const cart =
+        cartLocal === null ? {foods: [], number: 0, total: 0} : cartLocal;
+      const index = cart.foods.findIndex(
+        x => x.food.restaurant === state.restaurant,
+      );
+      cart.foods.splice(index);
+      setAccessCart(cart);
+      dispatch({type: CART_LOADED_SUCCESS, payload: cart});
+    } catch (error) {
+      console.log('lỗi');
+      dispatch({
+        type: CART_LOADED_FAIL,
+      });
+    }
+  };
+};
+
+export const handleAddToCart = order => {
+  return async dispatch => {
+    const value = await AsyncStorage.getItem('auth');
+    console.log('vv', value);
+    try {
+      if (getAccessAuth()) {
+        setAuthToken(value);
+      }
+      console.log(order);
+      const response = await axios.post(`${API_URI}/order`, order);
+      if (response.data.success === true) {
+        await dispatch(clearCartToRestaurant(order));
+        Alert.alert('Thông báo', response.data.message);
+        navigate('OrderSuccess');
+      }
+    } catch (error) {
+      console.log('that bai', error);
     }
   };
 };

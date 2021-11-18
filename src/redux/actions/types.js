@@ -80,6 +80,16 @@ export const LISTCHOOSE_SENDING = 'LISTCHOOSE_SENDING';
 /// Cart food and combo
 export const CART_LOADED_SUCCESS = 'CART_LOADED_SUCCESS';
 export const CART_LOADED_FAIL = 'CART_LOADED_FAIL';
+export const ORDER_LOADED_SUCCESS = 'ORDER_LOADED_SUCCESS';
+export const ORDER_LOADED_FAIL = 'ORDER_LOADED_FAIL';
+
+// pay
+export const PAY_LOADED_SUCCESS = 'PAY_LOADED_SUCCESS';
+export const PAY_LOADED_FAIL = 'PAY_LOADED_FAIL';
+
+// tính khoảng cách
+export const HAVERSINE_LOADED_SUCCESS = 'HAVERSINE_LOADED_SUCCESS';
+export const HAVERSINE_LOADED_FAIL = 'HAVERSINE_LOADED_FAIL';
 
 // action props
 // export const ActionProps = {

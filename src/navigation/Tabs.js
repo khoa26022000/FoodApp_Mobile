@@ -4,7 +4,14 @@ import {
   createBottomTabNavigator,
   BottomTabBar,
 } from '@react-navigation/bottom-tabs';
-import {Home, Login, OderDelivery, Profile, Search} from '../screens';
+import {
+  Home,
+  Login,
+  OderDelivery,
+  Profile,
+  Search,
+  OrderSuccess,
+} from '../screens';
 import {COLORS, icons} from '../constants';
 import Svg, {Path} from 'react-native-svg';
 

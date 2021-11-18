@@ -28,7 +28,7 @@ const ItemMenuFood = memo(function ItemMenuFood({item, idParams, foodCart}) {
         {item.name}
       </Text>
       <FlatList
-        data={combo.filter(comboItem => comboItem.menu == item._id)}
+        data={combo.filter(comboItem => comboItem?.menu == item._id)}
         keyExtractor={item => item._id.toString()}
         listKey={item => item._id.toString()}
         renderItem={({item}) => (

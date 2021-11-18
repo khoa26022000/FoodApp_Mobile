@@ -9,6 +9,8 @@ import restaurantReducer from './restaurantReducer';
 import comboReducer from './comboReducer';
 import listChooseReducer from './listChooseReducer';
 import cartReducer from './cartReducer';
+import payReducer from './payReducer';
+import haversineReducer from './haversineReducer';
 
 export default combineReducers({
   restaurant: restaurantReducer,
@@ -21,4 +23,6 @@ export default combineReducers({
   combo: comboReducer,
   listChoose: listChooseReducer,
   foodCart: cartReducer,
+  pay: payReducer,
+  km: haversineReducer,
 });

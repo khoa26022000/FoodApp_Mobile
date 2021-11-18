@@ -12,6 +12,7 @@ import {
   Login,
   Profile,
   Register,
+  OrderSuccess,
 } from './src/screens';
 import {navigationRef} from './src/navigation/rootNavigation';
 
@@ -38,6 +39,7 @@ export default function App() {
           <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="Profile" component={Profile} />
           <Stack.Screen name="Register" component={Register} />
+          <Stack.Screen name="OrderSuccess" component={OrderSuccess} />
           {/* <Stack.Screen name="OderDetail" component={OderDetail} /> */}
         </Stack.Navigator>
       </NavigationContainer>

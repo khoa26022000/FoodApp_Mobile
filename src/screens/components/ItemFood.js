@@ -12,7 +12,11 @@ import {icons, COLORS, SIZES, FONTS} from '../../constants';
 import PropTypes from 'prop-types';
 import PopupFood from './PopupFood';
 import {useDispatch} from 'react-redux';
-import {addFoodToCart, removeFoodToCart} from '../../redux/actions/cartActions';
+import {
+  addFoodToCart,
+  removeFoodToCart,
+  clearFoodToCart,
+} from '../../redux/actions/cartActions';
 
 const ItemFood = memo(function ItemFood({item, foodCart, idParams}) {
   const dispatch = useDispatch();
@@ -48,6 +52,12 @@ const ItemFood = memo(function ItemFood({item, foodCart, idParams}) {
   };
   const handleRemoveToCart = () => {
     dispatch(removeFoodToCart(item));
+    // if (getTotalItem(id) === 0) {
+    //   dispatch(clearFoodToCart(item));
+    // }
+  };
+  const handleClearToCart = () => {
+    dispatch(clearFoodToCart(item));
   };
   return (
     <View style={body.itemWrap}>
@@ -89,7 +99,13 @@ const ItemFood = memo(function ItemFood({item, foodCart, idParams}) {
           )}
           {getTotalItem(item._id) > 0 ? (
             <View style={body.slWrap}>
-              <TouchableOpacity style={body.tru} onPress={handleRemoveToCart}>
+              <TouchableOpacity
+                style={body.tru}
+                onPress={
+                  getTotalItem(item._id) === 1
+                    ? handleClearToCart
+                    : handleRemoveToCart
+                }>
                 <Image
                   resizeMode="cover"
                   style={body.icon}
