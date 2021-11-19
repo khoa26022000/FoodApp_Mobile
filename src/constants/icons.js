@@ -25,6 +25,7 @@ export const sushi = require('../assets/icons/sushi.png');
 export const user = require('../assets/icons/user.png');
 export const checked = require('../assets/checked.png');
 export const shipper = require('../assets/shipper.jpg');
+export const order = require('../assets/order.png');
 
 export default {
   back,
@@ -54,4 +55,5 @@ export default {
   user,
   checked,
   shipper,
+  order,
 };

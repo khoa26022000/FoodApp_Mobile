@@ -5,6 +5,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
 import Tabs from './src/navigation/Tabs';
+import TabsTop from './src/navigation/TabsTop';
 import {
   Home,
   Restaurant,
@@ -13,6 +14,11 @@ import {
   Profile,
   Register,
   OrderSuccess,
+  Order0,
+  Order1,
+  Order2,
+  Order3,
+  OrderDetals,
 } from './src/screens';
 import {navigationRef} from './src/navigation/rootNavigation';
 
@@ -33,6 +39,7 @@ export default function App() {
           }}
           initialRouteName={'Tabs'}>
           <Stack.Screen name="Tabs" component={Tabs} />
+          <Stack.Screen name="TabsTop" component={TabsTop} />
           <Stack.Screen name="Home" component={Home} />
           <Stack.Screen name="Restaurant" component={Restaurant} />
           <Stack.Screen name="OderDelivery" component={OderDelivery} />
@@ -40,6 +47,11 @@ export default function App() {
           <Stack.Screen name="Profile" component={Profile} />
           <Stack.Screen name="Register" component={Register} />
           <Stack.Screen name="OrderSuccess" component={OrderSuccess} />
+          <Stack.Screen name="Order0" component={Order0} />
+          <Stack.Screen name="Order1" component={Order1} />
+          <Stack.Screen name="Order2" component={Order2} />
+          <Stack.Screen name="Order3" component={Order3} />
+          <Stack.Screen name="OrderDetails" component={OrderDetals} />
           {/* <Stack.Screen name="OderDetail" component={OderDetail} /> */}
         </Stack.Navigator>
       </NavigationContainer>

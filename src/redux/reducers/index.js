@@ -11,6 +11,7 @@ import listChooseReducer from './listChooseReducer';
 import cartReducer from './cartReducer';
 import payReducer from './payReducer';
 import haversineReducer from './haversineReducer';
+import orderHistoryReducer from './orderHistoryReducer';
 
 export default combineReducers({
   restaurant: restaurantReducer,
@@ -25,4 +26,5 @@ export default combineReducers({
   foodCart: cartReducer,
   pay: payReducer,
   km: haversineReducer,
+  order: orderHistoryReducer,
 });

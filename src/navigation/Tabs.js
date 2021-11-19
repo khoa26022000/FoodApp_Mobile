@@ -11,9 +11,10 @@ import {
   Profile,
   Search,
   OrderSuccess,
+  OrderHistory,
 } from '../screens';
 import {COLORS, icons} from '../constants';
-import Svg, {Path} from 'react-native-svg';
+import TabsTop from './TabsTop';
 
 const Tab = createBottomTabNavigator();
 
@@ -50,12 +51,12 @@ export default function Tabs() {
         }}
       />
       <Tab.Screen
-        name="Search"
-        component={Search}
+        name="Order"
+        component={TabsTop}
         options={{
           tabBarIcon: ({focused}) => (
             <Image
-              source={icons.search}
+              source={icons.order}
               resizeMode="contain"
               style={{
                 width: 25,
