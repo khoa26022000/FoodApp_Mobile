@@ -19,6 +19,10 @@ import {useSelector, useDispatch} from 'react-redux';
 import {getCategory} from '../redux/actions/categoryActions';
 import {getRestaurant} from '../redux/actions/restaurantActions';
 import {loadUser} from '../redux/actions/userActions';
+import {getRestaurantCategory} from '../redux/actions/restaurantActions';
+import {getRestaurantHaversine} from '../redux/actions/restaurantActions';
+
+import ItemRestaurant from './components/ItemRestaurant';
 
 const imageSlider = [
   'https://image.thanhnien.vn/w1024/Uploaded/2021/bfznsfyr-bn/2021_10_02/1-1223.png',
@@ -35,32 +39,33 @@ export default function Home({navigation}) {
   // const {category} = useSelector(state => state.categoryReducer);
   const {category} = useSelector(state => state.category);
   const {restaurant} = useSelector(state => state.restaurant);
+  const {restaurant1} = useSelector(state => state.restaurant);
   const {user} = useSelector(state => state.user);
   const dispatch = useDispatch();
 
   //
   const [imageActive, setImageActive] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [categories, setCategories] = useState({category});
-  const [restaurants, setRestaurants] = useState({restaurant});
-
   useEffect(() => {
     dispatch(getCategory());
     dispatch(getRestaurant());
     dispatch(loadUser());
+    if (user.user?.profile.lat != null) {
+      dispatch(
+        getRestaurantHaversine(user.user?.profile.lat, user.user?.profile.lng),
+      );
+    }
   }, [dispatch]);
 
   function onSelectCategory(item) {
-    console.log(item);
-    // let restaurantList = {restaurant.filter(a =>
-    //   a.categories.includes(category._id),
-    // )};
-    const restaurantList = {restaurant};
-    console.log('data', restaurant);
-    console.log(restaurantList);
-    setRestaurants(restaurantList);
+    dispatch(getRestaurantCategory(item._id));
     setSelectedCategory(item);
   }
+  function getAllRestaurant() {
+    dispatch(getRestaurant());
+    setSelectedCategory(null);
+  }
+
   function RenderHeader() {
     return (
       <View
@@ -199,8 +204,21 @@ export default function Home({navigation}) {
     return (
       <View
         style={{
-          paddingVertical: SIZES.padding,
+          marginVertical: SIZES.padding,
+          backgroundColor: COLORS.white,
         }}>
+        <TouchableOpacity onPress={() => getAllRestaurant()}>
+          <Text
+            style={{
+              paddingHorizontal: SIZES.padding,
+              paddingVertical: SIZES.padding / 2,
+              color: COLORS.primary,
+              fontSize: SIZES.body3,
+            }}>
+            Xem tất cả
+          </Text>
+        </TouchableOpacity>
+
         <FlatList
           data={category}
           horizontal
@@ -208,84 +226,109 @@ export default function Home({navigation}) {
           keyExtractor={item => `${item._id}`}
           renderItem={renderItem}
           contentContainerStyle={{
-            padding: SIZES.padding,
-            backgroundColor: COLORS.white,
+            paddingHorizontal: SIZES.padding,
+            paddingBottom: SIZES.padding,
           }}
         />
       </View>
     );
   }
   function RenderRestaurantList() {
-    const renderItem = ({item}) => (
-      <TouchableOpacity
-        style={{
-          width: '100%',
-          marginBottom: SIZES.padding,
-          flexDirection: 'row',
-          backgroundColor: COLORS.white,
-        }}
-        onPress={() => navigation.navigate('Restaurant', {item})}>
-        <View
+    return (
+      <View>
+        {restaurant.map(item => (
+          <ItemRestaurant key={item._id} item={item} navigation={navigation} />
+        ))}
+      </View>
+    );
+  }
+  function RenderRestaurantHaversine() {
+    const renderItem = ({item}) => {
+      return (
+        <TouchableOpacity
           style={{
-            margin: SIZES.padding,
+            padding: SIZES.padding,
+            backgroundColor: COLORS.white,
             alignItems: 'center',
-          }}>
+            marginRight: SIZES.padding,
+            ...style.shadow,
+          }}
+          onPress={() => navigation.navigate('Restaurant', {item})}>
           <Image
             source={{uri: item.photo}}
             resizeMode="cover"
             style={{
-              height: 90,
-              width: 90,
+              height: 120,
+              width: 100,
             }}
           />
-        </View>
-        <View
-          style={{
-            marginLeft: SIZES.padding,
-            flexDirection: 'column',
-            justifyContent: 'flex-start',
-          }}>
-          <Text
-            style={{...FONTS.body2, fontWeight: 'bold', paddingVertical: 5}}>
-            {item.name}
-          </Text>
+          <View>
+            <Text
+              style={{
+                width: 100,
+                textAlign: 'center',
+                ...FONTS.body4,
+                fontWeight: 'bold',
+              }}>
+              {item.name}
+            </Text>
+          </View>
+        </TouchableOpacity>
+      );
+    };
+    return (
+      <View>
+        {restaurant1 === null ? null : (
           <View
             style={{
-              flexDirection: 'row',
-              justifyContent: 'flex-start',
+              // marginVertical: SIZES.padding,
+              marginTop: SIZES.padding,
+              backgroundColor: COLORS.white,
             }}>
             <View
               style={{
                 flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
               }}>
-              <Image
-                source={icons.star}
-                style={{
-                  height: 17,
-                  width: 17,
-                  tintColor: COLORS.primary,
-                  marginRight: 10,
-                }}
-              />
-              <Text style={{...FONTS.body3}}>{item.rating}</Text>
+              <TouchableOpacity onPress={() => getAllRestaurant()}>
+                <Text
+                  style={{
+                    paddingHorizontal: SIZES.padding,
+                    paddingVertical: SIZES.padding / 2,
+                    color: COLORS.primary,
+                    fontSize: SIZES.body3,
+                  }}>
+                  Cửa hàng gần bạn
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity>
+                <Text
+                  style={{
+                    paddingHorizontal: SIZES.padding,
+                    paddingVertical: SIZES.padding / 2,
+                    color: COLORS.darkgray,
+                    fontSize: SIZES.body4,
+                  }}>
+                  Xem tất cả
+                </Text>
+              </TouchableOpacity>
             </View>
-            <Text style={{paddingHorizontal: 5}}>|</Text>
-            <Text style={{...FONTS.body3}}>{item.duration}</Text>
+
+            <FlatList
+              data={restaurant1}
+              horizontal
+              showsHorizontalScrollIndicato={false}
+              keyExtractor={item => `${item._id}`}
+              renderItem={renderItem}
+              contentContainerStyle={{
+                paddingHorizontal: SIZES.padding,
+                paddingBottom: SIZES.padding,
+              }}
+            />
           </View>
-        </View>
-      </TouchableOpacity>
-    );
-    return (
-      <FlatList
-        data={restaurant}
-        keyExtractor={item => `${item._id}`}
-        renderItem={renderItem}
-        // contentContainerStyle={
-        //   {
-        //      paddingBottom: 10,
-        //   }
-        // }
-      />
+        )}
+      </View>
     );
   }
   return (
@@ -293,6 +336,7 @@ export default function Home({navigation}) {
       {RenderHeader()}
       <ScrollView>
         {RenderSlider()}
+        {RenderRestaurantHaversine()}
         {RenderMainCategories()}
         {RenderRestaurantList()}
       </ScrollView>

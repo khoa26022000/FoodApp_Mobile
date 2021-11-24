@@ -158,6 +158,9 @@ export const handleAddToCart = order => {
       }
       console.log(order);
       const response = await axios.post(`${API_URI}/order`, order);
+      if (response.data.success === false) {
+        Alert.alert('Thông báo', response.data.message);
+      }
       if (response.data.success === true) {
         await dispatch(clearCartToRestaurant(order));
         Alert.alert('Thông báo', response.data.message);

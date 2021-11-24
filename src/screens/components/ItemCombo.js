@@ -81,7 +81,7 @@ const ItemCombo = memo(function ItemCombo({item, foodCart, idParams}) {
 });
 ItemCombo.propTypes = {
   item: PropTypes.object,
-  foodCart: PropTypes.array,
+  foodCart: PropTypes.object,
   idParams: PropTypes.object,
 };
 

@@ -7,15 +7,17 @@ import {
   Image,
   StyleSheet,
   ScrollView,
+  Alert,
 } from 'react-native';
 import {icons, COLORS, SIZES, FONTS} from '../constants';
 import {useSelector, useDispatch} from 'react-redux';
-import {getRestaurant} from '../redux/actions/actions';
 import moment from 'moment';
+import {cancelOrder} from '../redux/actions/orderHistoryActions';
 
 export default function OrderDetals({route, navigation}) {
   const data = route.params.item;
-  console.log('data', data);
+  const item = data.restaurant;
+  const dispatch = useDispatch();
   function getSumItem() {
     let item = data.cartFood.reduce(
       (total, cur) => total + cur.quantityFood,
@@ -43,6 +45,7 @@ export default function OrderDetals({route, navigation}) {
       return 'Thời gian hủy:';
     }
   }
+
   function RenderHeader() {
     return (
       <View style={stylesHeader.header}>
@@ -134,7 +137,7 @@ export default function OrderDetals({route, navigation}) {
           <View style={styles.wrap} key={food._id}>
             <View style={styles.right}>
               <Image
-                source={{uri: food.idFood.photo}}
+                source={{uri: food.idFood?.photo}}
                 resizeMode="cover"
                 style={styles.icons}
               />
@@ -162,7 +165,7 @@ export default function OrderDetals({route, navigation}) {
           <View style={styles.wrap} key={food._id}>
             <View style={styles.right}>
               <Image
-                source={{uri: food.idFood.photo}}
+                source={{uri: food.idFood?.photo}}
                 resizeMode="cover"
                 style={styles.icons}
               />
@@ -170,7 +173,7 @@ export default function OrderDetals({route, navigation}) {
               <Text style={{marginHorizontal: 10, fontWeight: 'bold'}}>x</Text>
               <View>
                 <Text style={{fontWeight: 'bold', fontSize: 16}}>
-                  {food.idFood.name}
+                  {food.idFood?.name}
                 </Text>
               </View>
             </View>
@@ -281,6 +284,20 @@ export default function OrderDetals({route, navigation}) {
   }
 
   function RenderButton() {
+    function handleCancelOrder() {
+      try {
+        Alert.alert('Thông báo', 'Bạn có chắc muốn hủy đơn hàng ?', [
+          {
+            text: 'Cancel',
+            onPress: () => console.log('Cancel Pressed'),
+            style: 'cancel',
+          },
+          {text: 'OK', onPress: () => dispatch(cancelOrder(data._id))},
+        ]);
+      } catch (error) {
+        console.log(error);
+      }
+    }
     return (
       <View
         style={{
@@ -303,25 +320,37 @@ export default function OrderDetals({route, navigation}) {
             Hỗ trợ
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={{
-            width: 170,
-            height: 50,
-            backgroundColor: COLORS.primary,
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-          {data.status === 0 ? (
+        {data.status === 0 ? (
+          <TouchableOpacity
+            onPress={handleCancelOrder}
+            style={{
+              width: 170,
+              height: 50,
+              backgroundColor: COLORS.primary,
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
             <Text style={{color: COLORS.white, fontSize: SIZES.body3}}>
               Hủy đơn
             </Text>
-          ) : (
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Restaurant', {item})}
+            style={{
+              width: 170,
+              height: 50,
+              backgroundColor: COLORS.primary,
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
             <Text style={{color: COLORS.white, fontSize: SIZES.body3}}>
               Đặt lại
             </Text>
-          )}
-        </TouchableOpacity>
+          </TouchableOpacity>
+        )}
       </View>
     );
   }

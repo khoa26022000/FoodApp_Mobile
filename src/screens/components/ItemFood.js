@@ -178,8 +178,8 @@ const body = StyleSheet.create({
     alignItems: 'center',
   },
   image: {
-    height: 90,
-    width: 90,
+    height: 80,
+    width: 80,
   },
   content: {
     marginLeft: SIZES.padding,

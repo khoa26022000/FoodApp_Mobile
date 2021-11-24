@@ -7,11 +7,15 @@ import {
   ORDER2_LOADED_SUCCESS,
   ORDER3_LOADED_FAIL,
   ORDER3_LOADED_SUCCESS,
+  CANCEL_ORDER_SUCCESS,
+  CANCEL_ORDER_FAIL,
   API_URI,
 } from './types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import setAuthToken from '../../utils/setAuthToken';
 import {getAccessAuth} from '../../utils/asyncStore';
+import {Alert} from 'react-native';
+import {navigate} from '../../navigation/rootNavigation';
 
 import axios from 'axios';
 
@@ -79,6 +83,26 @@ export const getOrderSTT3 = () => {
     } catch (error) {
       console.log('lỗi', error);
       dispatch({type: ORDER3_LOADED_FAIL});
+    }
+  };
+};
+
+export const cancelOrder = idOrder => {
+  return async dispatch => {
+    const value = await AsyncStorage.getItem('auth');
+    try {
+      if (getAccessAuth()) {
+        setAuthToken(value);
+      }
+      const response = await axios.put(
+        `${API_URI}/order/cancel/user/${idOrder}`,
+      );
+      if (response.data.success) {
+        Alert.alert('Thông báo', 'Hủy đơn hàng thành công!!!');
+        navigate('Tabs');
+      }
+    } catch (error) {
+      console.log('lỗi', error);
     }
   };
 };

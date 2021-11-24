@@ -157,6 +157,8 @@ export default function OderDetail({restaurant, navigation}) {
           <Text>{user.user?.profile.fullName}</Text>
           <Text style={{marginHorizontal: 5}}>-</Text>
           <Text>{user.user?.phoneNumber}</Text>
+          <Text style={{marginHorizontal: 5}}>-</Text>
+          <Text>{user.user?.myCoin} COIN</Text>
         </View>
         <View style={styleInfoUser.item}>
           <Text>{user.user?.profile.address}</Text>
