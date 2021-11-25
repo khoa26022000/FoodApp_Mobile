@@ -11,6 +11,7 @@ import Order1 from './Order1';
 import Order2 from './Order2';
 import Order3 from './Order3';
 import OrderDetals from './OrderDetails';
+import SearchRestaurant from './SearchRestaurant';
 
 export {
   Home,
@@ -26,4 +27,5 @@ export {
   Order2,
   Order3,
   OrderDetals,
+  SearchRestaurant,
 };

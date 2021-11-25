@@ -10,16 +10,24 @@ export default function TabsTop() {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-      }}
-      tabBarOptions={{
-        labelStyle: {textTransform: 'none'},
-        style: {
+        tabBarLabelStyle: {textTransform: 'none'},
+        tabBarStyle: {
           backgroundColor: 'white',
           elevation: 0,
         },
-        activeTintColor: COLORS.primary,
-        inactiveTintColor: COLORS.secondary,
-      }}>
+        tabBarActiveTintColor: COLORS.primary,
+        tabBarInactiveTintColor: COLORS.secondary,
+      }}
+      // tabBarOptions={{
+      //   labelStyle: {textTransform: 'none'},
+      //   style: {
+      //     backgroundColor: 'white',
+      //     elevation: 0,
+      //   },
+      //   activeTintColor: COLORS.primary,
+      //   inactiveTintColor: COLORS.secondary,
+      // }}
+    >
       <Tab.Screen name="Xác nhận" component={Order0} />
       <Tab.Screen name="Đang đến" component={Order1} />
       <Tab.Screen name="Hoàn thành" component={Order2} />

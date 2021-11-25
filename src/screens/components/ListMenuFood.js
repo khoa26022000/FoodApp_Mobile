@@ -37,7 +37,17 @@ const ListMenuFood = memo(function ListMenuFood({
         style={{
           marginTop: 15,
         }}>
-        <FlatList // Hiện menu
+        <View style={{paddingBottom: 30}}>
+          {menu.map(item => (
+            <ItemMenuFood
+              key={item._id}
+              item={item}
+              idParams={idParams}
+              foodCart={foodCart}
+            />
+          ))}
+        </View>
+        {/* <FlatList // Hiện menu
           data={menu}
           keyExtractor={(item, index) => index}
           renderItem={({item}) => (
@@ -46,7 +56,7 @@ const ListMenuFood = memo(function ListMenuFood({
           contentContainerStyle={{
             paddingBottom: 30,
           }}
-        />
+        /> */}
       </View>
     </View>
   );

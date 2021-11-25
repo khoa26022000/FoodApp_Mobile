@@ -19,6 +19,7 @@ import {
   Order2,
   Order3,
   OrderDetals,
+  SearchRestaurant,
 } from './src/screens';
 import {navigationRef} from './src/navigation/rootNavigation';
 
@@ -52,6 +53,7 @@ export default function App() {
           <Stack.Screen name="Order2" component={Order2} />
           <Stack.Screen name="Order3" component={Order3} />
           <Stack.Screen name="OrderDetails" component={OrderDetals} />
+          <Stack.Screen name="SearchRestaurant" component={SearchRestaurant} />
           {/* <Stack.Screen name="OderDetail" component={OderDetail} /> */}
         </Stack.Navigator>
       </NavigationContainer>

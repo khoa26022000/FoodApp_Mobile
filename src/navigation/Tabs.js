@@ -23,16 +23,25 @@ export default function Tabs() {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-      }}
-      tabBarOptions={{
-        style: {
-          borderTopWidth: 1,
-          backgroundColor: 'transparent',
+        tabBarActiveTintColor: COLORS.primary,
+        tabBarInactiveTintColor: COLORS.secondary,
+        tabBarStyle: {
+          borderTopWidth: 0.7,
+          backgroundColor: COLORS.white,
+          // backgroundColor: 'transparent',
           elevation: 0,
         },
-        activeTintColor: COLORS.primary,
-        inactiveTintColor: COLORS.secondary,
-      }}>
+      }}
+      // tabBarOptions={{
+      //   style: {
+      //     borderTopWidth: 1,
+      //     backgroundColor: 'transparent',
+      //     elevation: 0,
+      //   },
+      //   activeTintColor: COLORS.primary,
+      //   inactiveTintColor: COLORS.secondary,
+      // }}
+    >
       <Tab.Screen
         name="Home"
         component={Home}
@@ -51,12 +60,12 @@ export default function Tabs() {
         }}
       />
       <Tab.Screen
-        name="Order"
-        component={TabsTop}
+        name="Search"
+        component={Search}
         options={{
           tabBarIcon: ({focused}) => (
             <Image
-              source={icons.order}
+              source={icons.search}
               resizeMode="contain"
               style={{
                 width: 25,
@@ -68,12 +77,12 @@ export default function Tabs() {
         }}
       />
       <Tab.Screen
-        name="Like"
-        component={Home}
+        name="Order"
+        component={TabsTop}
         options={{
           tabBarIcon: ({focused}) => (
             <Image
-              source={icons.like}
+              source={icons.order}
               resizeMode="contain"
               style={{
                 width: 25,

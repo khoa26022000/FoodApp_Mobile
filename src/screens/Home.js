@@ -104,13 +104,21 @@ export default function Home({navigation}) {
           </TouchableOpacity>
         </View>
         <View style={stylesForm.textInput}>
-          <Image
-            source={{
-              uri: 'https://cdn-icons-png.flaticon.com/128/622/622669.png',
-            }}
-            style={stylesForm.imageStyle}
-          />
-          <TextInput placeholder="Tìm kiếm địa chỉ món ăn thức uốn,.." />
+          <TouchableOpacity onPress={() => navigation.navigate('Search')}>
+            <Image
+              source={{
+                uri: 'https://cdn-icons-png.flaticon.com/128/622/622669.png',
+              }}
+              style={stylesForm.imageStyle}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => navigation.navigate('Search')}>
+            <Text style={{color: COLORS.darkgray}}>
+              Tìm kiếm địa chỉ món ăn thức uốn,..
+            </Text>
+          </TouchableOpacity>
+          {/* <TextInput placeholder="Tìm kiếm địa chỉ món ăn thức uốn,.." /> */}
         </View>
       </View>
     );
