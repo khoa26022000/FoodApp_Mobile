@@ -3,6 +3,7 @@ import {
   RESTAURANT_LOADED_FAIL,
   RESTAURANT_CATEGORY_SUCCESS,
   RESTAURANT_HAVERSINE_SUCCESS,
+  RESTAURANT_SEARCH_SUCCESS,
   RESTAURANT_LOADING,
   RESTAURANT_SENDING,
   RESTAURANT_SENT,
@@ -55,6 +56,24 @@ export const getRestaurantHaversine = (lat, lng) => {
       if (response.data.success) {
         dispatch({
           type: RESTAURANT_HAVERSINE_SUCCESS,
+          payload: response.data.restaurant,
+        });
+      }
+    } catch (error) {
+      dispatch({type: RESTAURANT_LOADED_FAIL});
+    }
+  };
+};
+
+export const getRestaurantSearch = key => {
+  return async dispatch => {
+    try {
+      const response = await axios.get(
+        `${API_URI}/restaurant/search?name=${key}`,
+      );
+      if (response.data.success) {
+        dispatch({
+          type: RESTAURANT_SEARCH_SUCCESS,
           payload: response.data.restaurant,
         });
       }

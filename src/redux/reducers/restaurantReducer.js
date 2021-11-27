@@ -2,6 +2,7 @@ import {
   RESTAURANT_LOADED_SUCCESS,
   RESTAURANT_CATEGORY_SUCCESS,
   RESTAURANT_HAVERSINE_SUCCESS,
+  RESTAURANT_SEARCH_SUCCESS,
   RESTAURANT_LOADING,
   RESTAURANT_SENDING,
   RESTAURANT_SENT,
@@ -10,6 +11,7 @@ import {
 const intialState = {
   restaurant: [],
   restaurant1: [],
+  restaurant2: [],
 };
 
 export default (state = intialState, action) => {
@@ -20,6 +22,8 @@ export default (state = intialState, action) => {
       return {...state, restaurant: action.payload};
     case RESTAURANT_HAVERSINE_SUCCESS:
       return {...state, restaurant1: action.payload};
+    case RESTAURANT_SEARCH_SUCCESS:
+      return {...state, restaurant2: action.payload};
     default:
       return state;
   }

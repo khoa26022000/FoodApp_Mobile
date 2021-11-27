@@ -160,7 +160,7 @@ const ItemFood = memo(function ItemFood({item, foodCart, idParams}) {
 });
 ItemFood.propTypes = {
   item: PropTypes.object,
-  foodCart: PropTypes.array,
+  foodCart: PropTypes.object,
   idParams: PropTypes.object,
 };
 
