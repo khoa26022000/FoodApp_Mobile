@@ -55,7 +55,7 @@ export default function Home({navigation}) {
         getRestaurantHaversine(user.user?.profile.lat, user.user?.profile.lng),
       );
     }
-  }, [dispatch]);
+  }, [dispatch, user.user?.profile.lat]);
 
   function onSelectCategory(item) {
     dispatch(getRestaurantCategory(item._id));

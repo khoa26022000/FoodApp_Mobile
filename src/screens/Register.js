@@ -27,6 +27,8 @@ export default function Register({navigation}) {
   const [street, setStreet] = useState('25 Trần phú');
   const [address, setAddress] = useState({city, district, ward, street});
 
+  const [selectedLanguage, setSelectedLanguage] = useState();
+
   function ValidatePhoneNumber(phoneNumber) {
     const phone = /^[0-9\-\+]{9,15}$/;
     return phone.test(phoneNumber);
@@ -152,6 +154,16 @@ export default function Register({navigation}) {
                 secureTextEntry={true}
               />
             </View>
+
+            <Picker
+              selectedValue={selectedLanguage}
+              onValueChange={(itemValue, itemIndex) =>
+                setSelectedLanguage(itemValue)
+              }>
+              <Picker.Item label="Java" value="java" />
+              <Picker.Item label="JavaScript" value="js" />
+            </Picker>
+
             <TouchableOpacity
               style={stylesForm.bottom}
               onPress={() => HandleSubmit()}>

@@ -60,7 +60,16 @@ const ItemFood = memo(function ItemFood({item, foodCart, idParams}) {
     dispatch(clearFoodToCart(item));
   };
   return (
-    <View style={body.itemWrap}>
+    <View
+      style={{
+        width: '100%',
+        marginBottom: SIZES.padding,
+        flexDirection: 'row',
+        borderBottomColor: COLORS.lightGray2,
+        borderBottomWidth: 1,
+        backgroundColor: COLORS.white,
+        opacity: item.quantity == 0 ? 0.5 : 1,
+      }}>
       <View style={body.imageWrap}>
         <Image
           source={{uri: item.photo}}
@@ -97,44 +106,54 @@ const ItemFood = memo(function ItemFood({item, foodCart, idParams}) {
               </Text>
             </View>
           )}
-          {getTotalItem(item._id) > 0 ? (
-            <View style={body.slWrap}>
-              <TouchableOpacity
-                style={body.tru}
-                onPress={
-                  getTotalItem(item._id) === 1
-                    ? handleClearToCart
-                    : handleRemoveToCart
-                }>
-                <Image
-                  resizeMode="cover"
-                  style={body.icon}
-                  source={{
-                    uri: 'https://as2.ftcdn.net/v2/jpg/03/30/24/99/500_F_330249927_k8oy0p4zZqSAdxd1jxlhB0ZPT3fGLpjw.jpg',
-                  }}
-                />
-              </TouchableOpacity>
-              <Text style={body.slText}>{getTotalItem(item._id)}</Text>
-              <TouchableOpacity style={body.tru} onPress={handleAddToCartPopup}>
-                <Image
-                  resizeMode="cover"
-                  style={body.icon}
-                  source={{
-                    uri: 'https://cdn-icons-png.flaticon.com/512/1828/1828925.png',
-                  }}
-                />
-              </TouchableOpacity>
+          {item.quantity == 0 ? (
+            <View>
+              <Text style={{color: COLORS.darkgray}}>Hết món</Text>
             </View>
           ) : (
-            <TouchableOpacity style={body.cong} onPress={handleAddToCart}>
-              <Image
-                resizeMode="cover"
-                style={body.icon}
-                source={{
-                  uri: 'https://cdn-icons-png.flaticon.com/512/1828/1828925.png',
-                }}
-              />
-            </TouchableOpacity>
+            <View>
+              {getTotalItem(item._id) > 0 ? (
+                <View style={body.slWrap}>
+                  <TouchableOpacity
+                    style={body.tru}
+                    onPress={
+                      getTotalItem(item._id) === 1
+                        ? handleClearToCart
+                        : handleRemoveToCart
+                    }>
+                    <Image
+                      resizeMode="cover"
+                      style={body.icon}
+                      source={{
+                        uri: 'https://as2.ftcdn.net/v2/jpg/03/30/24/99/500_F_330249927_k8oy0p4zZqSAdxd1jxlhB0ZPT3fGLpjw.jpg',
+                      }}
+                    />
+                  </TouchableOpacity>
+                  <Text style={body.slText}>{getTotalItem(item._id)}</Text>
+                  <TouchableOpacity
+                    style={body.tru}
+                    onPress={handleAddToCartPopup}>
+                    <Image
+                      resizeMode="cover"
+                      style={body.icon}
+                      source={{
+                        uri: 'https://cdn-icons-png.flaticon.com/512/1828/1828925.png',
+                      }}
+                    />
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <TouchableOpacity style={body.cong} onPress={handleAddToCart}>
+                  <Image
+                    resizeMode="cover"
+                    style={body.icon}
+                    source={{
+                      uri: 'https://cdn-icons-png.flaticon.com/512/1828/1828925.png',
+                    }}
+                  />
+                </TouchableOpacity>
+              )}
+            </View>
           )}
         </View>
       </View>
