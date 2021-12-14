@@ -12,6 +12,9 @@ import Order2 from './Order2';
 import Order3 from './Order3';
 import OrderDetals from './OrderDetails';
 import SearchRestaurant from './SearchRestaurant';
+import VerifyCode from './VerifyCode';
+import ForgotPassword from './ForgotPassword';
+import VerifyCodePass from './VerifyCodePass';
 
 export {
   Home,
@@ -28,4 +31,7 @@ export {
   Order3,
   OrderDetals,
   SearchRestaurant,
+  VerifyCode,
+  ForgotPassword,
+  VerifyCodePass,
 };

@@ -7,6 +7,7 @@ import {
   ScrollView,
   Image,
   StyleSheet,
+  Alert,
 } from 'react-native';
 import {icons, COLORS, SIZES, FONTS} from '../../constants';
 import {useSelector, useDispatch} from 'react-redux';
@@ -14,6 +15,7 @@ import ListCart from './ListCart';
 import {getPay} from '../../redux/actions/payActions';
 import {getKM} from '../../redux/actions/haversineActions';
 import {handleAddToCart} from '../../redux/actions/cartActions';
+import {navigate} from '../../navigation/rootNavigation';
 
 export default function OderDetail({restaurant, navigation}) {
   const [selectedPay, setSelectedPay] = useState('61614a21855f83b83e611b80');
@@ -21,7 +23,9 @@ export default function OderDetail({restaurant, navigation}) {
   const {foodCart} = useSelector(state => state.foodCart);
   const {pay} = useSelector(state => state.pay);
   const {km} = useSelector(state => state.km);
+  const {isSuccess} = useSelector(state => state.isSuccess);
   const dispatch = useDispatch();
+  console.log('$$$$', isSuccess);
   const cartItem = useMemo(() => {
     return foodCart?.foods?.filter(
       food => food.food.restaurant === restaurant._id,
@@ -69,6 +73,16 @@ export default function OderDetail({restaurant, navigation}) {
     return item;
   }
 
+  function getTotalCost() {
+    let item = foodCart?.foods
+      ?.filter(food => food.food.restaurant === restaurant._id)
+      ?.reduce(
+        (total, cur) => (total + cur.food.price + cur.priceChoose) * cur.number,
+        0,
+      );
+    return item;
+  }
+
   function getShip() {
     let item = 0;
     if (km < 4) {
@@ -87,6 +101,7 @@ export default function OderDetail({restaurant, navigation}) {
           .map(cart => ({
             idFood: cart.food._id,
             quantityFood: cart.number,
+            price: (cart.food.price + cart.priceChoose) * cart.number,
             amount: (cart.food.lastPrice + cart.priceChoose) * cart.number,
             listChoose: cart.food.listChoose,
           })),
@@ -95,23 +110,30 @@ export default function OderDetail({restaurant, navigation}) {
           .map(cart => ({
             idCombo: cart.food._id,
             quantityCombo: cart.number,
+            price: cart.food.price * cart.number,
             amount: cart.food.lastPrice * cart.number,
           })),
         restaurant: restaurant._id,
         pay: selectedPay,
         ship: getShip(),
+        totalCost: getTotalCost() + getShip(),
         total: getTotalPrice() + getShip(),
       };
-      // console.log('checkoutCart', checkoutCart);
-      dispatch(handleAddToCart(checkoutCart));
-      // const { data } = await orderApi.checkout(checkoutCart);
-
-      // if (data.success) {
-      //   setLoading(false);
-      //   Swal.fire('Success!', 'Bạn đã thanh toán thành công.', 'success');
-      //   history.push('/');
-      //   dispatch(detailActions.deleteFoodCartByRes(idParams.id));
-      // }
+      if (selectedPay !== '61614a35855f83b83e611b82') {
+        const is = dispatch(handleAddToCart(checkoutCart));
+        if (is) {
+          // navigate('OrderSuccess');
+          navigation.navigate('OrderSuccess', {
+            restaurant: restaurant,
+            user: user.user,
+          });
+        }
+      } else {
+        Alert.alert(
+          'Thông báo',
+          'Ứng dụng chưa hỗ trợ hình thức thanh toán này !',
+        );
+      }
     } catch (error) {
       console.log(
         '🚀 ~ file: index.jsx ~ line 31 ~ handleCheckout ~ error',
@@ -158,7 +180,7 @@ export default function OderDetail({restaurant, navigation}) {
           <Text style={{marginHorizontal: 5}}>-</Text>
           <Text>{user.user?.phoneNumber}</Text>
           <Text style={{marginHorizontal: 5}}>-</Text>
-          <Text>{user.user?.myCoin} COIN</Text>
+          <Text>{user.user?.myCoin} Điểm</Text>
         </View>
         <View style={styleInfoUser.item}>
           <Text>{user.user?.profile.address}</Text>

@@ -20,6 +20,9 @@ import {
   Order3,
   OrderDetals,
   SearchRestaurant,
+  VerifyCode,
+  ForgotPassword,
+  VerifyCodePass,
 } from './src/screens';
 import {navigationRef} from './src/navigation/rootNavigation';
 
@@ -54,7 +57,9 @@ export default function App() {
           <Stack.Screen name="Order3" component={Order3} />
           <Stack.Screen name="OrderDetails" component={OrderDetals} />
           <Stack.Screen name="SearchRestaurant" component={SearchRestaurant} />
-          {/* <Stack.Screen name="OderDetail" component={OderDetail} /> */}
+          <Stack.Screen name="VerifyCode" component={VerifyCode} />
+          <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+          <Stack.Screen name="VerifyCodePass" component={VerifyCodePass} />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>

@@ -159,12 +159,15 @@ export const handleAddToCart = order => {
       console.log(order);
       const response = await axios.post(`${API_URI}/order`, order);
       if (response.data.success === false) {
+        dispatch({type: ORDER_LOADED_FAIL, isSuccess: false});
         Alert.alert('Thông báo', response.data.message);
       }
       if (response.data.success === true) {
         await dispatch(clearCartToRestaurant(order));
+        dispatch({type: ORDER_LOADED_SUCCESS, isSuccess: true});
         Alert.alert('Thông báo', response.data.message);
-        navigate('OrderSuccess');
+        return true;
+        // navigate('OrderSuccess');
       }
     } catch (error) {
       console.log('that bai', error);

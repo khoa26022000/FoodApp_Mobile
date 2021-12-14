@@ -24,6 +24,7 @@ export default combineReducers({
   combo: comboReducer,
   listChoose: listChooseReducer,
   foodCart: cartReducer,
+  isSuccess: cartReducer,
   pay: payReducer,
   km: haversineReducer,
   order: orderHistoryReducer,

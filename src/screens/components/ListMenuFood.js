@@ -65,7 +65,7 @@ ListMenuFood.propTypes = {
   restaurant: PropTypes.object,
   menu: PropTypes.array,
   idParams: PropTypes.object,
-  foodCart: PropTypes.object,
+  foodCart: PropTypes.array,
 };
 
 const styles = StyleSheet.create({

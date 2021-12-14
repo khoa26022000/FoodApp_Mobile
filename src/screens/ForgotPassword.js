@@ -10,17 +10,20 @@ import {
 } from 'react-native';
 import {icons, COLORS, SIZES, FONTS} from '../constants';
 import {useDispatch, useSelector} from 'react-redux';
-import {loginUser} from '../redux/actions/userActions';
+import {forgotPassword} from '../redux/actions/userActions';
 
-export default function Login({navigation}) {
+export default function ForgotPassword({navigation}) {
   const {loginSuccess, loginFail} = useSelector(state => state.user);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
   const dispatch = useDispatch();
 
+  // useEffect(() => {
+  //   dispatch(loginUser());
+  // }, [dispatch]);
   function HandleSubmit() {
     try {
-      dispatch(loginUser(phoneNumber, password));
+      dispatch(forgotPassword(phoneNumber, password));
     } catch (error) {
       console.log(error);
     }
@@ -36,7 +39,7 @@ export default function Login({navigation}) {
             style={stylesHeader.icons}
           />
         </TouchableOpacity>
-        <Text style={stylesHeader.text}>Đăng nhập</Text>
+        <Text style={stylesHeader.text}>Quên mật khẩu</Text>
       </View>
     );
   }
@@ -77,7 +80,7 @@ export default function Login({navigation}) {
                 style={stylesForm.imageStyle}
               />
               <TextInput
-                placeholder="Mật khẩu"
+                placeholder="Mật khẩu mới"
                 onChangeText={setPassword}
                 value={password}
                 secureTextEntry={true}
@@ -86,14 +89,10 @@ export default function Login({navigation}) {
             <TouchableOpacity
               style={stylesForm.bottom}
               onPress={() => HandleSubmit()}>
-              <Text style={stylesForm.bottomText}>Đăng nhập</Text>
+              <Text style={stylesForm.bottomText}>Xác nhận</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-              <Text style={stylesForm.res}>Đăng ký tài khoản ?</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => navigation.navigate('ForgotPassword')}>
-              <Text style={stylesForm.res}>Quên mật khẩu ?</Text>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <Text style={stylesForm.res}>Quay về</Text>
             </TouchableOpacity>
           </View>
         </View>

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {
   View,
   Text,
@@ -12,7 +12,23 @@ import {icons, COLORS, SIZES, FONTS} from '../constants';
 import {useDispatch, useSelector} from 'react-redux';
 import {registerUser} from '../redux/actions/userActions';
 import {Picker} from '@react-native-picker/picker';
+import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
+import {
+  GooglePlacesAutocomplete,
+  geocodeByPlaceId,
+  getLatLng,
+} from 'react-native-google-places-autocomplete';
 import axios from 'axios';
+
+const homePlace = {
+  description: 'Home',
+  geometry: {location: {lat: 10.7757, lng: 106.7004}},
+};
+
+const workPlace = {
+  description: 'Work',
+  geometry: {location: {lat: 10.7757, lng: 106.7004}},
+};
 
 export default function Register({navigation}) {
   const [listCity, setListCity] = useState([]);
@@ -21,13 +37,7 @@ export default function Register({navigation}) {
   const [password, setPassword] = useState('');
   const [conformPassword, setConformPassword] = useState('');
   const [fullName, setFullName] = useState('');
-  const [city, setCity] = useState('Thành phố Hồ Chí Minh');
-  const [district, setDistrict] = useState('Quận 8');
-  const [ward, setWard] = useState('Phường 5');
-  const [street, setStreet] = useState('25 Trần phú');
-  const [address, setAddress] = useState({city, district, ward, street});
-
-  const [selectedLanguage, setSelectedLanguage] = useState();
+  const [address, setAddress] = useState();
 
   function ValidatePhoneNumber(phoneNumber) {
     const phone = /^[0-9\-\+]{9,15}$/;
@@ -105,7 +115,7 @@ export default function Register({navigation}) {
               />
               <TextInput
                 placeholder="Họ và tên"
-                dataDetectorTypes="fullName"
+                // dataDetectorTypes="fullName"
                 onChangeText={setFullName}
                 value={fullName}
               />
@@ -120,10 +130,23 @@ export default function Register({navigation}) {
               <TextInput
                 placeholder="Số điện thoại"
                 keyboardType="numeric"
-                dataDetectorTypes="phoneNumber"
+                // dataDetectorTypes="phoneNumber"
                 onChangeText={setPhoneNumber}
                 value={phoneNumber}
                 maxLength={10}
+              />
+            </View>
+            <View style={stylesForm.textInput}>
+              <Image
+                source={{
+                  uri: 'https://cdn-icons-png.flaticon.com/512/927/927667.png',
+                }}
+                style={stylesForm.imageStyle}
+              />
+              <TextInput
+                placeholder="Địa chỉ"
+                onChangeText={setAddress}
+                value={address}
               />
             </View>
             <View style={stylesForm.textInput}>
@@ -154,15 +177,6 @@ export default function Register({navigation}) {
                 secureTextEntry={true}
               />
             </View>
-
-            <Picker
-              selectedValue={selectedLanguage}
-              onValueChange={(itemValue, itemIndex) =>
-                setSelectedLanguage(itemValue)
-              }>
-              <Picker.Item label="Java" value="java" />
-              <Picker.Item label="JavaScript" value="js" />
-            </Picker>
 
             <TouchableOpacity
               style={stylesForm.bottom}

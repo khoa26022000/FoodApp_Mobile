@@ -286,7 +286,7 @@ export default function Home({navigation}) {
     };
     return (
       <View>
-        {restaurant1 === null ? null : (
+        {restaurant1.length === 0 ? null : (
           <View
             style={{
               // marginVertical: SIZES.padding,

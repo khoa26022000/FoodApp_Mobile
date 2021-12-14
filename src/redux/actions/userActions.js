@@ -10,7 +10,7 @@ import {Alert} from 'react-native';
 
 import axios from 'axios';
 
-import {navigate} from '../../navigation/rootNavigation';
+import {navigate, navigateRoute} from '../../navigation/rootNavigation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import setAuthToken from '../../utils/setAuthToken';
 import {
@@ -135,30 +135,121 @@ export const registerUser = (
       console.log('pass', password);
       console.log('conform', conformPassword);
       console.log('name', fullName);
+      const res = await axios.get(
+        `https://api.opencagedata.com/geocode/v1/json`,
+        {
+          params: {
+            q: address,
+            key: 'e50cdcc8921f46e8ade4bea172f062f7',
+          },
+        },
+      );
+      const {lat, lng} = res.data.results[0].geometry;
       const response = await axios.post(`${API_URI}/auth/register`, {
         phoneNumber,
         password,
         conformPassword,
         fullName,
-        address: {
-          city: address.city,
-          district: address.district,
-          ward: address.ward,
-          street: address.street,
-        },
+        address,
+        lat,
+        lng,
       });
       if (response.data.success) {
         console.log('dk thanh cong', response.data);
         Alert.alert('Thông báo', response.data.message);
         dispatch({
           type: REGISTER_SUCCESS,
-          payload: {loginSuccess: response.data},
+          payload: response.data.token,
         });
+        if (response.data.success === true) {
+          const token = response.data.token;
+          navigateRoute('VerifyCode', token);
+        }
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response.data) {
+        console.log('that bai', error.response.data);
+        dispatch({
+          type: REGISTER_FAIL,
+          payload: {loginSuccess: error.response.data},
+        });
+        Alert.alert('Thông báo', error.response.data.message);
+        return error.response.data;
+      } else return {success: false, message: error.message};
+    }
+  };
+};
+
+export const verifyCode = (token, code) => {
+  return async dispatch => {
+    try {
+      const response = await axios.get(
+        `${API_URI}/auth/verify?token=${token}&code=${code}`,
+      );
+      console.log('$$$', response);
+      if (response.data.success) {
+        Alert.alert('Thông báo', response.data.message);
         if (response.data.success === true) {
           navigate('Login');
         }
       }
+    } catch (error) {
+      if (error.response.data) {
+        console.log('that bai', error.response.data);
+        dispatch({
+          type: REGISTER_FAIL,
+          payload: {loginSuccess: error.response.data},
+        });
+        Alert.alert('Thông báo', error.response.data.message);
+        return error.response.data;
+      } else return {success: false, message: error.message};
+    }
+  };
+};
+
+export const forgotPassword = (phoneNumber, newPassword) => {
+  return async dispatch => {
+    try {
+      const response = await axios.post(`${API_URI}/auth/forgot-password`, {
+        phoneNumber,
+        newPassword,
+      });
+      if (response.data.success) {
+        Alert.alert('Thông báo', response.data.message);
+        if (response.data.success === true) {
+          const token = response.data.token;
+          navigateRoute('VerifyCodePass', token);
+        }
+      }
       return response.data;
+    } catch (error) {
+      if (error.response.data) {
+        console.log('that bai', error.response.data);
+        dispatch({
+          type: REGISTER_FAIL,
+          payload: {loginSuccess: error.response.data},
+        });
+        Alert.alert('Thông báo', error.response.data.message);
+        return error.response.data;
+      } else return {success: false, message: error.message};
+    }
+  };
+};
+
+export const verifyCodeNewPass = (token, code) => {
+  return async dispatch => {
+    try {
+      const response = await axios.get(
+        `${API_URI}/auth/verify-newPassword?token=${token}&code=${code}`,
+      );
+      console.log('$$$', response);
+      if (response.data.success) {
+        Alert.alert('Thông báo', response.data.message);
+        if (response.data.success === true) {
+          navigate('Login');
+        }
+      }
     } catch (error) {
       if (error.response.data) {
         console.log('that bai', error.response.data);

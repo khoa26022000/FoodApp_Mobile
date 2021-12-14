@@ -10,17 +10,17 @@ import {
 } from 'react-native';
 import {icons, COLORS, SIZES, FONTS} from '../constants';
 import {useDispatch, useSelector} from 'react-redux';
-import {loginUser} from '../redux/actions/userActions';
+import {verifyCodeNewPass} from '../redux/actions/userActions';
 
-export default function Login({navigation}) {
-  const {loginSuccess, loginFail} = useSelector(state => state.user);
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [password, setPassword] = useState('');
+export default function VerifyCodePass({navigation, route}) {
+  const token = route.params;
+  console.log('token', token);
+  const [code, setCode] = useState();
   const dispatch = useDispatch();
 
   function HandleSubmit() {
     try {
-      dispatch(loginUser(phoneNumber, password));
+      dispatch(verifyCodeNewPass(token, code));
     } catch (error) {
       console.log(error);
     }
@@ -36,7 +36,7 @@ export default function Login({navigation}) {
             style={stylesHeader.icons}
           />
         </TouchableOpacity>
-        <Text style={stylesHeader.text}>Đăng nhập</Text>
+        <Text style={stylesHeader.text}>Xác thực OTP</Text>
       </View>
     );
   }
@@ -57,43 +57,25 @@ export default function Login({navigation}) {
             <View style={stylesForm.textInput}>
               <Image
                 source={{
-                  uri: 'https://cdn-icons-png.flaticon.com/512/1077/1077063.png',
-                }}
-                style={stylesForm.imageStyle}
-              />
-              <TextInput
-                placeholder="Số điện thoại"
-                dataDetectorTypes="phoneNumber"
-                onChangeText={setPhoneNumber}
-                value={phoneNumber}
-                keyboardType="numeric"
-              />
-            </View>
-            <View style={stylesForm.textInput}>
-              <Image
-                source={{
                   uri: 'https://cdn-icons-png.flaticon.com/512/3064/3064197.png',
                 }}
                 style={stylesForm.imageStyle}
               />
               <TextInput
-                placeholder="Mật khẩu"
-                onChangeText={setPassword}
-                value={password}
-                secureTextEntry={true}
+                placeholder="Mã xác thực"
+                dataDetectorTypes="phoneNumber"
+                onChangeText={setCode}
+                value={code}
+                keyboardType="numeric"
               />
             </View>
             <TouchableOpacity
               style={stylesForm.bottom}
               onPress={() => HandleSubmit()}>
-              <Text style={stylesForm.bottomText}>Đăng nhập</Text>
+              <Text style={stylesForm.bottomText}>Xác nhận</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-              <Text style={stylesForm.res}>Đăng ký tài khoản ?</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => navigation.navigate('ForgotPassword')}>
-              <Text style={stylesForm.res}>Quên mật khẩu ?</Text>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <Text style={stylesForm.res}>Quay lại</Text>
             </TouchableOpacity>
           </View>
         </View>

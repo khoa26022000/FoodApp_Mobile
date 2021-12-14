@@ -49,7 +49,7 @@ const ItemMenuFood = memo(function ItemMenuFood({item, idParams, foodCart}) {
 ItemMenuFood.propTypes = {
   item: PropTypes.object,
   idParams: PropTypes.object,
-  foodCart: PropTypes.array,
+  foodCart: PropTypes.object,
 };
 
 export default ItemMenuFood;
