@@ -5,6 +5,7 @@ import {
   USER_LOADED_FAIL,
   REGISTER_SUCCESS,
   REGISTER_FAIL,
+  CHANGE_ADDRESS,
 } from './types';
 import {Alert} from 'react-native';
 
@@ -19,6 +20,7 @@ import {
   getAccessCart,
   removeAccecssAuth,
 } from '../../utils/asyncStore';
+import RNRestart from 'react-native-restart';
 
 export const loadUser = () => {
   return async dispatch => {
@@ -131,10 +133,6 @@ export const registerUser = (
 ) => {
   return async dispatch => {
     try {
-      console.log('phone', phoneNumber);
-      console.log('pass', password);
-      console.log('conform', conformPassword);
-      console.log('name', fullName);
       const res = await axios.get(
         `https://api.opencagedata.com/geocode/v1/json`,
         {
@@ -260,6 +258,45 @@ export const verifyCodeNewPass = (token, code) => {
         Alert.alert('Thông báo', error.response.data.message);
         return error.response.data;
       } else return {success: false, message: error.message};
+    }
+  };
+};
+
+export const changeAddress = address => {
+  return async dispatch => {
+    const value = await AsyncStorage.getItem('auth');
+    try {
+      if (getAccessAuth()) {
+        setAuthToken(value);
+      }
+      const res = await axios.get(
+        `https://api.opencagedata.com/geocode/v1/json`,
+        {
+          params: {
+            q: address,
+            key: 'e50cdcc8921f46e8ade4bea172f062f7',
+          },
+        },
+      );
+      const {lat, lng} = res.data.results[0].geometry;
+      const reponse = await axios.put(`${API_URI}/auth/changeAddress`, {
+        address,
+        lat,
+        lng,
+      });
+      if (reponse.data.success) {
+        dispatch({
+          type: CHANGE_ADDRESS,
+          payload: reponse.data.user,
+        });
+        Alert.alert('Thông báo', reponse.data.message);
+        // RNRestart.Restart();
+        await dispatch(loadUser());
+      }
+    } catch (error) {
+      setAuthToken(null);
+      console.log(error);
+      Alert.alert('Thông báo', 'Không tìm thấy địa chỉ hoặc user');
     }
   };
 };

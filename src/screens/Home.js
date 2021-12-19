@@ -12,7 +12,8 @@ import {
   TextInput,
 } from 'react-native';
 import {COLORS, icons, SIZES, FONTS} from '../constants';
-
+import moment from 'moment';
+import RNRestart from 'react-native-restart';
 //redux
 import {useSelector, useDispatch} from 'react-redux';
 // import {getCategory, getRestaurant} from '../redux/actions/actions';
@@ -21,6 +22,8 @@ import {getRestaurant} from '../redux/actions/restaurantActions';
 import {loadUser} from '../redux/actions/userActions';
 import {getRestaurantCategory} from '../redux/actions/restaurantActions';
 import {getRestaurantHaversine} from '../redux/actions/restaurantActions';
+import {getRestaurantDiscount} from '../redux/actions/restaurantActions';
+import {changeAddress} from '../redux/actions/userActions';
 
 import ItemRestaurant from './components/ItemRestaurant';
 
@@ -40,22 +43,30 @@ export default function Home({navigation}) {
   const {category} = useSelector(state => state.category);
   const {restaurant} = useSelector(state => state.restaurant);
   const {restaurant1} = useSelector(state => state.restaurant);
+  const {restaurantDiscount} = useSelector(state => state.restaurant);
   const {user} = useSelector(state => state.user);
   const dispatch = useDispatch();
 
   //
   const [imageActive, setImageActive] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [inputAddress, setInputAddress] = useState(true);
+  const [address, setAddress] = useState();
   useEffect(() => {
     dispatch(getCategory());
     dispatch(getRestaurant());
-    dispatch(loadUser());
+    // dispatch(loadUser());
+    dispatch(getRestaurantDiscount());
     if (user.user?.profile.lat != null) {
       dispatch(
         getRestaurantHaversine(user.user?.profile.lat, user.user?.profile.lng),
       );
     }
   }, [dispatch, user.user?.profile.lat]);
+
+  useEffect(() => {
+    dispatch(loadUser());
+  }, [dispatch]);
 
   function onSelectCategory(item) {
     dispatch(getRestaurantCategory(item._id));
@@ -64,6 +75,12 @@ export default function Home({navigation}) {
   function getAllRestaurant() {
     dispatch(getRestaurant());
     setSelectedCategory(null);
+  }
+  function HandleChangeAddress(address) {
+    dispatch(changeAddress(address));
+    setAddress('');
+    setInputAddress(!inputAddress);
+    // RNRestart.Restart();
   }
 
   function RenderHeader() {
@@ -77,32 +94,84 @@ export default function Home({navigation}) {
         <View>
           <Text>Giao hàng đến: </Text>
         </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'flex-start',
-            paddingVertical: 5,
-          }}>
-          <Image
-            resizeMode="cover"
+        {inputAddress ? (
+          <View
             style={{
-              height: 20,
-              marginRight: 5,
-              width: 20,
-              tintColor: COLORS.primary,
-            }}
-            source={{
-              uri: 'https://cdn-icons-png.flaticon.com/512/927/927667.png',
-            }}
-          />
-          <TouchableOpacity>
-            <Text>
-              {user.isAuthenticated === true
-                ? user.user?.profile.address
-                : 'Địa chỉ giao hàng'}
-            </Text>
-          </TouchableOpacity>
-        </View>
+              flexDirection: 'row',
+              justifyContent: 'flex-start',
+              paddingVertical: 5,
+            }}>
+            <Image
+              resizeMode="cover"
+              style={{
+                height: 20,
+                marginRight: 5,
+                width: 20,
+                tintColor: COLORS.primary,
+              }}
+              source={{
+                uri: 'https://cdn-icons-png.flaticon.com/512/927/927667.png',
+              }}
+            />
+            <TouchableOpacity
+              onPress={() => {
+                setInputAddress(!inputAddress);
+              }}>
+              <Text>
+                {user.isAuthenticated === true
+                  ? user.user?.profile.address
+                  : 'Địa chỉ giao hàng'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View style={(stylesForm.textInput, {paddingBottom: 10})}>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                height: 40,
+                backgroundColor: COLORS.lightGray,
+              }}>
+              <TouchableOpacity
+                onPress={() => {
+                  setInputAddress(!inputAddress);
+                  setAddress('');
+                }}>
+                <Image
+                  source={{
+                    uri: 'https://cdn-icons.flaticon.com/png/512/3031/premium/3031157.png?token=exp=1639816963~hmac=e9a4fa11624b4fc6cb36c63ac3861e65',
+                  }}
+                  style={{
+                    marginLeft: 10,
+                    height: 20,
+                    width: 20,
+                    resizeMode: 'stretch',
+                    alignItems: 'center',
+                    tintColor: COLORS.black,
+                  }}
+                />
+              </TouchableOpacity>
+              <TextInput
+                style={{color: COLORS.black, width: '78%'}}
+                placeholder="Nhập địa chỉ"
+                value={address}
+                onChangeText={setAddress}
+              />
+
+              <TouchableOpacity onPress={() => HandleChangeAddress(address)}>
+                <Image
+                  source={{
+                    uri: 'https://cdn-icons.flaticon.com/png/128/1055/premium/1055183.png?token=exp=1639820775~hmac=b430db991089605ea2fb4f859060fff5',
+                  }}
+                  style={stylesForm.imageStyle}
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+
         <View style={stylesForm.textInput}>
           <TouchableOpacity onPress={() => navigation.navigate('Search')}>
             <Image
@@ -118,7 +187,6 @@ export default function Home({navigation}) {
               Tìm kiếm địa chỉ món ăn thức uốn,..
             </Text>
           </TouchableOpacity>
-          {/* <TextInput placeholder="Tìm kiếm địa chỉ món ăn thức uốn,.." /> */}
         </View>
       </View>
     );
@@ -339,11 +407,117 @@ export default function Home({navigation}) {
       </View>
     );
   }
+
+  function RenderRestaurantDiscount() {
+    const renderItem = ({item}) => {
+      return (
+        <TouchableOpacity
+          style={{
+            padding: SIZES.padding,
+            backgroundColor: COLORS.white,
+            alignItems: 'center',
+            marginRight: SIZES.padding,
+            ...style.shadow,
+          }}
+          onPress={() =>
+            navigation.navigate('Restaurant', {item: item.restaurant})
+          }>
+          <Image
+            source={{uri: item?.photo}}
+            resizeMode="cover"
+            style={{
+              height: 120,
+              width: 100,
+            }}
+          />
+          <View>
+            <Text
+              style={{
+                width: 100,
+                textAlign: 'center',
+                ...FONTS.body4,
+                fontWeight: 'bold',
+              }}>
+              {item?.nameDiscount}
+            </Text>
+          </View>
+          <View>
+            <Text
+              style={{
+                width: 100,
+                textAlign: 'center',
+                ...FONTS.body4,
+                color: COLORS.primary,
+              }}>
+              {`Từ ${moment(item?.date1).format('DD/MM')}\n Đến ${moment(
+                item?.date2,
+              ).format('DD/MM')}`}
+            </Text>
+          </View>
+        </TouchableOpacity>
+      );
+    };
+    return (
+      <View>
+        {restaurantDiscount.length === 0 ? null : (
+          <View
+            style={{
+              // marginVertical: SIZES.padding,
+              marginTop: SIZES.padding,
+              backgroundColor: COLORS.white,
+            }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}>
+              <TouchableOpacity>
+                <Text
+                  style={{
+                    paddingHorizontal: SIZES.padding,
+                    paddingVertical: SIZES.padding / 2,
+                    color: COLORS.primary,
+                    fontSize: SIZES.body3,
+                  }}>
+                  Bộ sưu tập
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity>
+                <Text
+                  style={{
+                    paddingHorizontal: SIZES.padding,
+                    paddingVertical: SIZES.padding / 2,
+                    color: COLORS.darkgray,
+                    fontSize: SIZES.body4,
+                  }}>
+                  Xem tất cả
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            <FlatList
+              data={restaurantDiscount}
+              horizontal
+              showsHorizontalScrollIndicato={false}
+              keyExtractor={item => `${item?._id}`}
+              renderItem={renderItem}
+              contentContainerStyle={{
+                paddingHorizontal: SIZES.padding,
+                paddingBottom: SIZES.padding,
+              }}
+            />
+          </View>
+        )}
+      </View>
+    );
+  }
   return (
     <SafeAreaView style={style.container}>
       {RenderHeader()}
       <ScrollView>
         {RenderSlider()}
+        {RenderRestaurantDiscount()}
         {RenderRestaurantHaversine()}
         {RenderMainCategories()}
         {RenderRestaurantList()}

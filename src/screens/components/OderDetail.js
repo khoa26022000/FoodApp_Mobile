@@ -80,6 +80,7 @@ export default function OderDetail({restaurant, navigation}) {
         (total, cur) => (total + cur.food.price + cur.priceChoose) * cur.number,
         0,
       );
+    console.log(item);
     return item;
   }
 
@@ -106,7 +107,7 @@ export default function OderDetail({restaurant, navigation}) {
             listChoose: cart.food.listChoose,
           })),
         arrayCombo: cartItem
-          .filter(food => food.comboDetails)
+          .filter(food => food.food.comboDetails)
           .map(cart => ({
             idCombo: cart.food._id,
             quantityCombo: cart.number,

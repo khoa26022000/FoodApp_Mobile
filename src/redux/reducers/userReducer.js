@@ -4,6 +4,7 @@ import {
   USER_LOADED_FAIL,
   REGISTER_SUCCESS,
   REGISTER_FAIL,
+  CHANGE_ADDRESS,
 } from '../actions/types';
 const intialState = {
   user: [],
@@ -11,6 +12,7 @@ const intialState = {
   isAuthenticated: false,
   loginSuccess: [],
   loginFail: [],
+  changeAddress: [],
 };
 
 export default (state = intialState, action) => {
@@ -23,6 +25,8 @@ export default (state = intialState, action) => {
       return {...state, loginFail: action.payload};
     case REGISTER_SUCCESS:
       return {...state, token: action.payload};
+    case CHANGE_ADDRESS:
+      return {...state, changeAddress: action.payload};
     default:
       return state;
   }

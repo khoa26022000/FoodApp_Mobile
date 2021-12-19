@@ -4,6 +4,7 @@ import {
   RESTAURANT_CATEGORY_SUCCESS,
   RESTAURANT_HAVERSINE_SUCCESS,
   RESTAURANT_SEARCH_SUCCESS,
+  RESTAURANT_DISCOUNT_SUCCESS,
   RESTAURANT_LOADING,
   RESTAURANT_SENDING,
   RESTAURANT_SENT,
@@ -75,6 +76,22 @@ export const getRestaurantSearch = key => {
         dispatch({
           type: RESTAURANT_SEARCH_SUCCESS,
           payload: response.data.restaurant,
+        });
+      }
+    } catch (error) {
+      dispatch({type: RESTAURANT_LOADED_FAIL});
+    }
+  };
+};
+
+export const getRestaurantDiscount = () => {
+  return async dispatch => {
+    try {
+      const response = await axios.get(`${API_URI}/discount/restaurantAll`);
+      if (response.data.success) {
+        dispatch({
+          type: RESTAURANT_DISCOUNT_SUCCESS,
+          payload: response.data.discount,
         });
       }
     } catch (error) {
