@@ -43,20 +43,20 @@ export default function App() {
           }}
           initialRouteName={'Tabs'}>
           <Stack.Screen name="Tabs" component={Tabs} />
-          <Stack.Screen name="TabsTop" component={TabsTop} />
-          <Stack.Screen name="Home" component={Home} />
+          {/* <Stack.Screen name="TabsTop" component={TabsTop} /> */}
+          {/* <Stack.Screen name="Home" component={Home} /> */}
           <Stack.Screen name="Restaurant" component={Restaurant} />
           <Stack.Screen name="OderDelivery" component={OderDelivery} />
           <Stack.Screen name="Login" component={Login} />
-          <Stack.Screen name="Profile" component={Profile} />
+          {/* <Stack.Screen name="Profile" component={Profile} /> */}
           <Stack.Screen name="Register" component={Register} />
           <Stack.Screen name="OrderSuccess" component={OrderSuccess} />
-          <Stack.Screen name="Order0" component={Order0} />
+          {/* <Stack.Screen name="Order0" component={Order0} />
           <Stack.Screen name="Order1" component={Order1} />
           <Stack.Screen name="Order2" component={Order2} />
-          <Stack.Screen name="Order3" component={Order3} />
+          <Stack.Screen name="Order3" component={Order3} /> */}
           <Stack.Screen name="OrderDetails" component={OrderDetals} />
-          <Stack.Screen name="SearchRestaurant" component={SearchRestaurant} />
+          {/* <Stack.Screen name="SearchRestaurant" component={SearchRestaurant} /> */}
           <Stack.Screen name="VerifyCode" component={VerifyCode} />
           <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
           <Stack.Screen name="VerifyCodePass" component={VerifyCodePass} />

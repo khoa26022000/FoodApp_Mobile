@@ -10,8 +10,12 @@ export default function Order0({navigation}) {
   const dispatch = useDispatch();
   const {order0} = useSelector(state => state.order);
   useEffect(() => {
-    dispatch(getOrderSTT0());
-  }, [dispatch]);
+    const unsubscribe = navigation.addListener('focus', e => {
+      dispatch(getOrderSTT0());
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   return (
     <View>

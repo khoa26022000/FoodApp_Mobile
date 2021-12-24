@@ -7,9 +7,16 @@ import ItemOrder from './components/ItemOrder';
 export default function Order3({navigation}) {
   const dispatch = useDispatch();
   const {order3} = useSelector(state => state.order);
+  // useEffect(() => {
+  //   dispatch(getOrderSTT3());
+  // }, []);
   useEffect(() => {
-    dispatch(getOrderSTT3());
-  }, [dispatch]);
+    const unsubscribe = navigation.addListener('focus', e => {
+      dispatch(getOrderSTT3());
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   return (
     <View>

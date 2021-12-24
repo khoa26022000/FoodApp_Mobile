@@ -2,10 +2,29 @@ import React, {useEffect} from 'react';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {Order0, Order1, Order2, Order3} from '../screens';
 import {icons, COLORS} from '../constants';
+import {
+  getOrderSTT0,
+  getOrderSTT1,
+  getOrderSTT2,
+  getOrderSTT3,
+} from '../redux/actions/orderHistoryActions';
+import {useSelector, useDispatch} from 'react-redux';
 
 const Tab = createMaterialTopTabNavigator();
 
-export default function TabsTop() {
+export default function TabsTop({navigation}) {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('tabPress', e => {
+      dispatch(getOrderSTT0());
+      dispatch(getOrderSTT1());
+      dispatch(getOrderSTT2());
+      dispatch(getOrderSTT3());
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -17,17 +36,7 @@ export default function TabsTop() {
         },
         tabBarActiveTintColor: COLORS.primary,
         tabBarInactiveTintColor: COLORS.secondary,
-      }}
-      // tabBarOptions={{
-      //   labelStyle: {textTransform: 'none'},
-      //   style: {
-      //     backgroundColor: 'white',
-      //     elevation: 0,
-      //   },
-      //   activeTintColor: COLORS.primary,
-      //   inactiveTintColor: COLORS.secondary,
-      // }}
-    >
+      }}>
       <Tab.Screen name="Xác nhận" component={Order0} />
       <Tab.Screen name="Đang đến" component={Order1} />
       <Tab.Screen name="Hoàn thành" component={Order2} />

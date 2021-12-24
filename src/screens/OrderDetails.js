@@ -17,6 +17,7 @@ import {cancelOrder} from '../redux/actions/orderHistoryActions';
 export default function OrderDetals({route, navigation}) {
   const data = route.params.item;
   const item = data.restaurant;
+  console.log('CARTCOMBOOO', data.cartCombo);
   const dispatch = useDispatch();
   function getSumItem() {
     let item = data.cartFood.reduce(
@@ -165,15 +166,15 @@ export default function OrderDetals({route, navigation}) {
           <View style={styles.wrap} key={food._id}>
             <View style={styles.right}>
               <Image
-                source={{uri: food.idFood?.photo}}
+                source={{uri: food.idCombo?.photo}}
                 resizeMode="cover"
                 style={styles.icons}
               />
-              <Text style={{fontWeight: 'bold'}}>{food.quantityFood}</Text>
+              <Text style={{fontWeight: 'bold'}}>{food.quantityCombo}</Text>
               <Text style={{marginHorizontal: 10, fontWeight: 'bold'}}>x</Text>
               <View>
                 <Text style={{fontWeight: 'bold', fontSize: 16}}>
-                  {food.idFood?.name}
+                  {food.idCombo?.name}
                 </Text>
               </View>
             </View>

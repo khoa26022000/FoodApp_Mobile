@@ -7,8 +7,8 @@ export const getCombo = restaurant => {
     try {
       //const response = await axios.get(`${API}/food/${restaurant}`);
       const response = await axios.get(`${API_URI}/combo/all`);
-      if (response.data.success)
-        dispatch({type: COMBO_LOADED_SUCCESS, payload: response.data.combo});
+      if (response.data.success) console.log('COMBOOOOO');
+      dispatch({type: COMBO_LOADED_SUCCESS, payload: response.data.combo});
     } catch (error) {
       dispatch({type: COMBO_LOADED_FAIL});
     }

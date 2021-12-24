@@ -12,6 +12,7 @@ import {
   Search,
   OrderSuccess,
   OrderHistory,
+  Order0,
 } from '../screens';
 import {COLORS, icons} from '../constants';
 import TabsTop from './TabsTop';

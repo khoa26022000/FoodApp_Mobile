@@ -52,7 +52,9 @@ const ItemCombo = memo(function ItemCombo({item, foodCart, idParams}) {
           </Text>
           {item.quantity == 0 ? (
             <View>
-              <Text style={{color: COLORS.darkgray}}>Hết món</Text>
+              <Text style={{color: COLORS.darkgray, marginRight: 10}}>
+                Hết món
+              </Text>
             </View>
           ) : (
             <View>
