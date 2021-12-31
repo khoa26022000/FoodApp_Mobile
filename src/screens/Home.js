@@ -497,7 +497,7 @@ export default function Home({navigation}) {
             </View>
 
             <FlatList
-              data={restaurantDiscount}
+              data={restaurantDiscount.filter(x => x)}
               horizontal
               showsHorizontalScrollIndicato={false}
               keyExtractor={item => `${item?._id}`}

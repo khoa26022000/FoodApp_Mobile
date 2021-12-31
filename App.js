@@ -56,7 +56,7 @@ export default function App() {
           <Stack.Screen name="Order2" component={Order2} />
           <Stack.Screen name="Order3" component={Order3} /> */}
           <Stack.Screen name="OrderDetails" component={OrderDetals} />
-          {/* <Stack.Screen name="SearchRestaurant" component={SearchRestaurant} /> */}
+          <Stack.Screen name="SearchRestaurant" component={SearchRestaurant} />
           <Stack.Screen name="VerifyCode" component={VerifyCode} />
           <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
           <Stack.Screen name="VerifyCodePass" component={VerifyCodePass} />

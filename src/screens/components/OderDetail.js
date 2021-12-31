@@ -67,9 +67,10 @@ export default function OderDetail({restaurant, navigation}) {
       ?.filter(food => food.food.restaurant === restaurant._id)
       ?.reduce(
         (total, cur) =>
-          (total + cur.food.lastPrice + cur.priceChoose) * cur.number,
+          total + (cur.food.lastPrice + cur.priceChoose) * cur.number,
         0,
       );
+    console.log(item);
     return item;
   }
 
@@ -77,10 +78,11 @@ export default function OderDetail({restaurant, navigation}) {
     let item = foodCart?.foods
       ?.filter(food => food.food.restaurant === restaurant._id)
       ?.reduce(
-        (total, cur) => (total + cur.food.price + cur.priceChoose) * cur.number,
+        (total, cur) =>
+          total + (cur.food.lastPrice + cur.priceChoose) * cur.number,
         0,
       );
-    console.log(item);
+    console.log('COST', item);
     return item;
   }
 
@@ -201,7 +203,7 @@ export default function OderDetail({restaurant, navigation}) {
             }}
           />
           <Text style={styleInfoFood.text}>
-            Giao ngay - {getTime()} - Hôm nay {getDate()}
+            Giao ngày - {getTime()} - Hôm nay {getDate()}
           </Text>
         </View>
         <View style={styleInfoFood.restaurant}>
